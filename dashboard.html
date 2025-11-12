@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - VLT Carioca</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #667eea; }
+        .user-info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover { background: #c0392b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard - VLT Carioca</h1>
+        
+        <div class="user-info">
+            <h2>Bem-vindo, <span id="nomeUsuario">usuário</span>!</h2>
+            <p>Tipo de acesso: <strong id="tipoUsuario">-</strong></p>
+        </div>
+
+        <h3>Seções do Dashboard:</h3>
+        <ul>
+            <li>Relatórios</li>
+            <li>Gráficos</li>
+            <li>Usuários</li>
+        </ul>
+
+        <br>
+        <button onclick="logout()">Sair</button>
+    </div>
+
+    <script>
+        const usuario = localStorage.getItem('usuario');
+        const tipo = localStorage.getItem('tipo');
+
+        if (!usuario) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('nomeUsuario').textContent = usuario;
+            document.getElementById('tipoUsuario').textContent = tipo;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
