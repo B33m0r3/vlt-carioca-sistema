@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard VLT Carioca</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canACvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -32,7 +32,10 @@
             position: relative;
             z-index: 100;
         }
-        .sidebar.collapsed { width: 80px; padding: 20px 10px; }
+        .sidebar.collapsed {
+            width: 80px;
+            padding: 20px 10px;
+        }
         .sidebar.collapsed .nav-label { display: none; }
         .sidebar.collapsed .logo span { display: none; }
         .toggle-sidebar {
@@ -76,8 +79,17 @@
         }
         .nav-item i { width: 20px; min-width: 20px; }
         .nav-label { display: inline; }
-        .nav-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .nav-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 20px 0;
+        }
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
         .top-bar {
             background: white;
             padding: 15px 30px;
@@ -88,7 +100,11 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .breadcrumb { color: #7f8c8d; font-size: 14px; }
-        .top-right { display: flex; gap: 20px; align-items: center; }
+        .top-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
         .screenshot-btn {
             padding: 8px 16px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -122,18 +138,47 @@
             color: white;
             font-weight: bold;
         }
-        .user-info { font-size: 13px; }
+        .user-info {
+            font-size: 13px;
+        }
         .user-name { font-weight: 600; color: var(--dark); }
         .user-role { color: #7f8c8d; font-size: 11px; }
-        .content { flex: 1; overflow-y: auto; padding: 30px; position: relative; display: flex; flex-direction: column; }
-        .pages-wrapper { flex: 1; overflow-y: auto; }
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .pages-wrapper {
+            flex: 1;
+            overflow-y: auto;
+        }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .page-header { margin-bottom: 30px; }
-        .page-header h1 { font-size: 28px; color: var(--dark); margin-bottom: 5px; }
-        .page-header p { color: #7f8c8d; font-size: 14px; }
-        .filter-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-header {
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        .page-header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
         .filter-btn {
             padding: 10px 20px;
             background: white;
@@ -144,8 +189,16 @@
             color: var(--dark);
             transition: all 0.3s;
         }
-        .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .download-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
         .download-btn {
             padding: 10px 20px;
             background: var(--success);
@@ -157,19 +210,45 @@
             transition: all 0.3s;
         }
         .download-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,172,254,0.4); }
-        .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        thead { background: var(--light); }
-        th { padding: 15px; text-align: left; font-weight: 600; color: var(--dark); border-bottom: 2px solid var(--border); }
-        td { padding: 12px 15px; border-bottom: 1px solid var(--border); }
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        thead {
+            background: var(--light);
+        }
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
         tr:hover { background: var(--light); }
-        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
         .status-liberado { background: #e8f8f5; color: #27ae60; }
         .status-manutencao { background: #fdeaea; color: #e74c3c; }
         .status-agendado { background: #e8f0fe; color: #4a7c9f; }
         .status-colisao { background: #fff3cd; color: #856404; }
         .btn-primary {
-            padding: 15px 30px;
+            padding: 10px 20px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
@@ -179,11 +258,13 @@
             transition: all 0.3s;
             text-decoration: none;
             display: inline-block;
-            font-size: 16px;
         }
         .btn-primary:hover { transform: translateY(-2px); }
         .btn-primary i { margin-right: 8px; }
-        .center-content { text-align: center; padding: 60px 20px; }
+        .center-content {
+            text-align: center;
+            padding: 60px 20px;
+        }
         .modal {
             display: none;
             position: fixed;
@@ -219,11 +300,34 @@
             color: #999;
         }
         .modal-close:hover { color: #333; }
-        .modal-title { font-size: 24px; font-weight: 600; margin-bottom: 30px; color: var(--dark); }
-        .modal-section { margin-bottom: 25px; }
-        .modal-label { font-size: 12px; color: #7f8c8d; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
-        .modal-value { font-size: 16px; color: var(--dark); font-weight: 600; }
-        .modal-link { display: inline-block; color: var(--primary); text-decoration: none; cursor: pointer; font-weight: 600; }
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        .modal-section {
+            margin-bottom: 25px;
+        }
+        .modal-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .modal-value {
+            font-size: 16px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        .modal-link {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
         .modal-link:hover { color: var(--secondary); }
         .motivational-quote {
             margin-top: auto;
@@ -264,8 +368,8 @@
                     <span class="nav-label">Dashboard</span>
                 </li>
                 <li class="nav-item" onclick="showPage('passagem')">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span class="nav-label">Passagem de Servico</span>
+                    <i class="fas fa-file-pdf"></i>
+                    <span class="nav-label">Passagem de Serviço</span>
                 </li>
                 <li class="nav-item" onclick="showPage('novo_registro')">
                     <i class="fas fa-plus-circle"></i>
@@ -273,11 +377,11 @@
                 </li>
                 <li class="nav-item" onclick="showPage('relatorios')" id="relatorios-menu">
                     <i class="fas fa-table"></i>
-                    <span class="nav-label">Relatorios</span>
+                    <span class="nav-label">Relatórios</span>
                 </li>
                 <li class="nav-item" onclick="showPage('usuarios')" id="usuarios-menu">
                     <i class="fas fa-users"></i>
-                    <span class="nav-label">Usuarios</span>
+                    <span class="nav-label">Usuários</span>
                 </li>
             </ul>
             <div class="nav-divider"></div>
@@ -311,29 +415,29 @@
                     <!-- Dashboard -->
                     <div class="page active" id="page-dashboard">
                         <div class="page-header">
-                            <h1>📈 Dashboard Analitico</h1>
-                            <p>Graficos e indicadores em tempo real</p>
+                            <h1>📈 Dashboard Analítico</h1>
+                            <p>Gráficos e indicadores em tempo real</p>
                         </div>
                         <div style="width: 100%; height: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px;">
                             <iframe src="https://lookerstudio.google.com/embed/reporting/95cf4b2a-b4ef-4aa1-910c-423461799e6c" frameborder="0" style="border: 0; width: 100%; height: 100%;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                         </div>
                     </div>
 
-                    <!-- Passagem de Servico -->
+                    <!-- Passagem de Serviço -->
                     <div class="page" id="page-passagem">
                         <div class="page-header">
-                            <h1>📋 Passagem de Servico</h1>
-                            <p>Resumo do ultimo plantao - Transicao de turno</p>
+                            <h1>📋 Passagem de Serviço</h1>
+                            <p>Resumo do último plantão - Transição de turno</p>
                         </div>
                         <div class="table-container">
                             <table>
                                 <thead>
                                     <tr>
                                         <th>Data/Hora</th>
-                                        <th>Tecnico</th>
+                                        <th>Técnico</th>
                                         <th>Trem</th>
                                         <th>Sistema</th>
-                                        <th>Descricao</th>
+                                        <th>Descrição</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -353,23 +457,23 @@
                             <p>Preencha um novo registro de falha ou evento</p>
                         </div>
                         <div class="center-content">
-                            <a href="https://forms.gle/krwFHMg1V6YocmGY9" target="_blank" class="btn-primary">
-                                <i class="fas fa-external-link-alt"></i> Abrir Formulario de Novo Registro
+                            <a href="https://forms.gle/krwFHMg1V6YocmGY9" target="_blank" class="btn-primary" style="padding: 20px 40px; font-size: 18px;">
+                                <i class="fas fa-external-link-alt"></i> Abrir Formulário de Novo Registro
                             </a>
                             <p style="margin-top: 30px; color: #7f8c8d; font-size: 14px;">
-                                Ao preencher e enviar o formulario, os dados serao adicionados automaticamente a planilha central.
+                                Ao preencher e enviar o formulário, os dados serão adicionados automaticamente à planilha central.
                             </p>
                         </div>
                     </div>
 
-                    <!-- Relatorios -->
+                    <!-- Relatórios -->
                     <div class="page" id="page-relatorios">
                         <div class="page-header">
-                            <h1>📊 Relatorios de Falhas</h1>
-                            <p>Selecione o periodo e filtros desejados para gerar relatorio</p>
+                            <h1>📊 Relatórios de Falhas</h1>
+                            <p>Selecione o período desejado para gerar relatório</p>
                         </div>
                         <div class="filter-buttons">
-                            <button class="filter-btn" onclick="filterAndShowReport(30)">📅 1 Mes</button>
+                            <button class="filter-btn" onclick="filterAndShowReport(30)">📅 1 Mês</button>
                             <button class="filter-btn" onclick="filterAndShowReport(60)">📅 2 Meses</button>
                             <button class="filter-btn" onclick="filterAndShowReport(90)">📅 3 Meses</button>
                             <button class="filter-btn" onclick="filterAndShowReport(180)">📅 6 Meses</button>
@@ -380,24 +484,24 @@
                                 <thead>
                                     <tr>
                                         <th>Data</th>
-                                        <th>Tecnico</th>
+                                        <th>Técnico</th>
                                         <th>Trem</th>
                                         <th>Sistema</th>
                                         <th>IOS</th>
-                                        <th>Descricao</th>
+                                        <th>Descrição</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="relatorio-table">
                                     <tr>
-                                        <td colspan="7" style="text-align: center; padding: 40px;">Clique em um periodo para gerar o relatorio</td>
+                                        <td colspan="7" style="text-align: center; padding: 40px;">Clique em um período para gerar o relatório</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="download-buttons" id="download-buttons" style="display: none;">
-                            <button class="download-btn" onclick="downloadCSV()">
-                                <i class="fas fa-file-csv"></i> Download CSV
+                            <button class="download-btn" onclick="downloadExcel()">
+                                <i class="fas fa-file-excel"></i> Download Excel
                             </button>
                             <button class="download-btn" onclick="downloadPDF()">
                                 <i class="fas fa-file-pdf"></i> Download PDF
@@ -405,27 +509,25 @@
                         </div>
                     </div>
 
-                    <!-- Usuarios -->
+                    <!-- Usuários -->
                     <div class="page" id="page-usuarios">
                         <div class="page-header">
-                            <h1>👥 Usuarios do Sistema</h1>
-                            <p>Lista de usuarios cadastrados</p>
+                            <h1>👥 Usuários do Sistema</h1>
+                            <p>Lista de usuários cadastrados</p>
                         </div>
                         <div class="table-container">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Usuario</th>
+                                        <th>Usuário</th>
                                         <th>Nome</th>
-                                        <th>Email</th>
-                                        <th>Telefone</th>
                                         <th>Tipo</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="usuarios-table">
                                     <tr>
-                                        <td colspan="6" style="text-align: center; padding: 40px;" class="loading">⏳ Carregando usuarios...</td>
+                                        <td colspan="4" style="text-align: center; padding: 40px;" class="loading">⏳ Carregando usuários...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -434,7 +536,7 @@
                 </div>
 
                 <div class="motivational-quote" id="motivational-quote">
-                    💪 Excelencia é a jornada, nao o destino!
+                    💪 Excelência é a jornada, não o destino!
                 </div>
             </div>
         </main>
@@ -447,32 +549,24 @@
             <div class="modal-title">👤 Meu Perfil</div>
             
             <div class="modal-section">
-                <div class="modal-label">Nome Completo</div>
-                <div class="modal-value" id="perfil-nome">-</div>
-            </div>
-            <div class="modal-section">
-                <div class="modal-label">Usuario</div>
-                <div class="modal-value" id="perfil-usuario">-</div>
+                <div class="modal-label">Nome</div>
+                <div class="modal-value">Guilherme Juraci</div>
             </div>
             <div class="modal-section">
                 <div class="modal-label">Email</div>
-                <div class="modal-value" id="perfil-email">-</div>
+                <div class="modal-value">
+                    <a href="mailto:guilherme.fernandes@motiva.com.br" class="modal-link">
+                        📧 guilherme.fernandes@motiva.com.br
+                    </a>
+                </div>
             </div>
             <div class="modal-section">
-                <div class="modal-label">Telefone</div>
-                <div class="modal-value" id="perfil-telefone">-</div>
-            </div>
-            <div class="modal-section">
-                <div class="modal-label">Endereco</div>
-                <div class="modal-value" id="perfil-endereco">-</div>
-            </div>
-            <div class="modal-section">
-                <div class="modal-label">Matricula</div>
-                <div class="modal-value" id="perfil-matricula">-</div>
-            </div>
-            <div class="modal-section">
-                <div class="modal-label">Tipo</div>
-                <div class="modal-value" id="perfil-tipo">-</div>
+                <div class="modal-label">WhatsApp</div>
+                <div class="modal-value">
+                    <a href="https://wa.me/5521987654321" class="modal-link" target="_blank">
+                        💬 (21) 98765-4321
+                    </a>
+                </div>
             </div>
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);">
                 <button style="width: 100%; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="logout()">
@@ -517,25 +611,25 @@
 
     <script>
         const motivationalQuotes = [
-            "💪 Excelencia é a jornada, nao o destino!",
-            "🚆 Seguranca em primeiro lugar, sempre!",
-            "🛡️ Protecao é responsabilidade de todos!",
-            "⚡ Somos o coracao ferroviario do Rio!",
-            "🎯 Precisao e dedicao em cada operacao!",
-            "👥 Juntos fazemos a diferenca!",
-            "🌟 VLT Carioca: Mobilidade com seguranca!",
+            "💪 Excelência é a jornada, não o destino!",
+            "🚆 Segurança em primeiro lugar, sempre!",
+            "🛡️ Proteção é responsabilidade de todos!",
+            "⚡ Somos o coração ferroviário do Rio!",
+            "🎯 Precisão e dedição em cada operação!",
+            "👥 Juntos fazemos a diferença!",
+            "🌟 VLT Carioca: Mobilidade com segurança!",
             "✅ Qualidade: nosso compromisso!",
-            "🚀 Inovacao todos os dias!",
-            "❤️ Paixao pelo que fazemos!",
-            "🏆 Somos os melhores ferroviarios!",
-            "🔧 Manutencao impecavel, sempre!",
-            "⭐ Faca sua parte, sempre com cuidado!",
+            "🚀 Inovação todos os dias!",
+            "❤️ Paixão pelo que fazemos!",
+            "🏆 Somos os melhores ferroviários!",
+            "🔧 Manutenção impecável, sempre!",
+            "⭐ Faça sua parte, sempre com cuidado!",
             "💯 100% de comprometimento!",
-            "🎖️ Orgulho de servir a populacao!",
+            "🎖️ Orgulho de servir a população!",
             "🚇 Conectando vidas, cidades e sonhos!",
-            "🛡️ Cada detalhe conta para a seguranca!",
+            "🛡️ Cada detalhe conta para a segurança!",
             "👨‍🔧 Profissionalismo em tudo o que fazemos!",
-            "🌉 VLT: Lideranca em mobilidade urbana!",
+            "🌉 VLT: Liderança em mobilidade urbana!",
             "💡 Ideias para melhorar a cada dia!"
         ];
 
@@ -567,46 +661,28 @@
             return rows;
         }
 
-        let userProfileData = null;
-
         function checkAuth() {
-            const user = localStorage.getItem('usuario');
-            const tipo = localStorage.getItem('tipo');
+            const user = sessionStorage.getItem('user');
             if (!user) {
                 window.location.href = 'index.html';
                 return null;
             }
-            return { usuario: user, tipo: tipo };
+            return JSON.parse(user);
         }
 
         const currentUser = checkAuth();
 
         if (currentUser) {
-            document.getElementById('userName').textContent = localStorage.getItem('usuario') || 'Usuario';
-            document.getElementById('userRole').textContent = localStorage.getItem('tipo') || 'Usuário';
-            const initials = (localStorage.getItem('usuario') || 'U')[0].toUpperCase() + (localStorage.getItem('usuario') || 'U').split('.')[1]?.[0]?.toUpperCase() || 'R';
+            document.getElementById('userName').textContent = currentUser.usuario;
+            document.getElementById('userRole').textContent = currentUser.tipo;
+            const parts = currentUser.usuario.split('.');
+            const initials = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
             document.getElementById('userInitials').textContent = initials;
 
             if (currentUser.tipo !== 'ADMIN') {
                 document.getElementById('relatorios-menu').style.display = 'none';
                 document.getElementById('usuarios-menu').style.display = 'none';
             }
-
-            carregarPerfilUsuario();
-        }
-
-        function carregarPerfilUsuario() {
-            const usuario = localStorage.getItem('usuario');
-            fetch(USUARIOS_CSV)
-                .then(r => r.text())
-                .then(csv => {
-                    const rows = parseCSV(csv);
-                    const userRow = rows.find(r => r['Usuario'] === usuario || r['usuario'] === usuario);
-                    if (userRow) {
-                        userProfileData = userRow;
-                    }
-                })
-                .catch(e => console.error('Erro ao carregar perfil:', e));
         }
 
         function toggleSidebar() {
@@ -622,10 +698,10 @@
 
             const titles = {
                 'dashboard': '📊 Dashboard',
-                'passagem': '📋 Passagem de Servico',
+                'passagem': '📋 Passagem de Serviço',
                 'novo_registro': '➕ Novo Registro',
-                'relatorios': '📊 Relatorios',
-                'usuarios': '👥 Usuarios'
+                'relatorios': '📊 Relatórios',
+                'usuarios': '👥 Usuários'
             };
             document.getElementById('breadcrumb').textContent = titles[pageName] || pageName;
 
@@ -659,7 +735,7 @@
                     }
                 })
                 .catch(e => {
-                    console.error('Erro:', e);
+                    console.error('Erro ao carregar Passagem:', e);
                     document.getElementById('passagem-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Erro ao carregar dados</td></tr>';
                 });
         }
@@ -671,23 +747,21 @@
                     const rows = parseCSV(csv);
                     const table = document.getElementById('usuarios-table');
                     if (rows.length === 0) {
-                        table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum usuario encontrado</td></tr>';
+                        table.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:40px;">Nenhum usuário encontrado</td></tr>';
                     } else {
                         table.innerHTML = rows.map(r => `
                             <tr>
-                                <td>${r['Usuario'] || r['usuario'] || '-'}</td>
-                                <td>${r['Nome_Completo'] || r['nome_completo'] || '-'}</td>
-                                <td>${r['Email'] || r['email'] || '-'}</td>
-                                <td>${r['Telefone'] || r['telefone'] || '-'}</td>
-                                <td><span style="padding:4px 12px;border-radius:12px;background:rgba(102,126,234,0.1);color:#667eea;font-size:12px;font-weight:600;">${r['Tipo'] || r['tipo'] || '-'}</span></td>
-                                <td><span style="padding:4px 12px;border-radius:12px;background:#e8f8f5;color:#27ae60;font-size:12px;font-weight:600;">${r['Ativo'] || r['ativo'] || '-'}</span></td>
+                                <td>${r['Usuario'] || '-'}</td>
+                                <td>${r['Nome_Completo'] || '-'}</td>
+                                <td><span style="padding:4px 12px;border-radius:12px;background:rgba(102,126,234,0.1);color:#667eea;font-size:12px;font-weight:600;">${r['Tipo'] || '-'}</span></td>
+                                <td><span style="padding:4px 12px;border-radius:12px;background:#e8f8f5;color:#27ae60;font-size:12px;font-weight:600;">${r['Ativo'] || '-'}</span></td>
                             </tr>
                         `).join('');
                     }
                 })
                 .catch(e => {
-                    console.error('Erro:', e);
-                    document.getElementById('usuarios-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Erro ao carregar usuarios</td></tr>';
+                    console.error('Erro ao carregar Usuários:', e);
+                    document.getElementById('usuarios-table').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:40px;">Erro ao carregar usuários</td></tr>';
                 });
         }
 
@@ -712,7 +786,7 @@
 
                     const table = document.getElementById('relatorio-table');
                     if (currentReportData.length === 0) {
-                        table.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Nenhum registro no periodo</td></tr>';
+                        table.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Nenhum registro no período</td></tr>';
                     } else {
                         table.innerHTML = currentReportData.map(r => `
                             <tr>
@@ -730,19 +804,19 @@
                     document.getElementById('download-buttons').style.display = 'flex';
                 })
                 .catch(e => {
-                    console.error('Erro:', e);
-                    document.getElementById('relatorio-table').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Erro ao carregar relatorio</td></tr>';
+                    console.error('Erro ao carregar Relatório:', e);
+                    document.getElementById('relatorio-table').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Erro ao carregar relatório</td></tr>';
                 });
         }
 
-        function downloadCSV() {
+        function downloadExcel() {
             if (currentReportData.length === 0) {
                 alert('Nenhum dado para exportar');
                 return;
             }
             const ws = XLSX.utils.json_to_sheet(currentReportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Relatorio');
+            XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
             XLSX.writeFile(wb, 'VLT_Relatorio_' + new Date().toISOString().slice(0, 10) + '.xlsx');
         }
 
@@ -772,18 +846,7 @@
             });
         }
 
-        function openProfileModal() { 
-            if (userProfileData) {
-                document.getElementById('perfil-nome').textContent = userProfileData['Nome_Completo'] || userProfileData['nome_completo'] || '-';
-                document.getElementById('perfil-usuario').textContent = userProfileData['Usuario'] || userProfileData['usuario'] || '-';
-                document.getElementById('perfil-email').textContent = userProfileData['Email'] || userProfileData['email'] || '-';
-                document.getElementById('perfil-telefone').textContent = userProfileData['Telefone'] || userProfileData['telefone'] || '-';
-                document.getElementById('perfil-endereco').textContent = userProfileData['Endereco'] || userProfileData['endereco'] || '-';
-                document.getElementById('perfil-matricula').textContent = userProfileData['Matricula'] || userProfileData['matricula'] || '-';
-                document.getElementById('perfil-tipo').textContent = userProfileData['Tipo'] || userProfileData['tipo'] || '-';
-            }
-            document.getElementById('profileModal').classList.add('show'); 
-        }
+        function openProfileModal() { document.getElementById('profileModal').classList.add('show'); }
         function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
         function openSupportModal() { document.getElementById('supportModal').classList.add('show'); }
         function closeSupportModal() { document.getElementById('supportModal').classList.remove('show'); }
@@ -796,7 +859,7 @@
         });
 
         function logout() {
-            localStorage.clear();
+            sessionStorage.removeItem('user');
             window.location.href = 'index.html';
         }
 
