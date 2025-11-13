@@ -1,936 +1,806 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - VLT Carioca</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f5f5;
-      color: #333;
-    }
-
-    .container {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      width: 280px;
-      background: linear-gradient(180deg, #00a651 0%, #008c45 100%);
-      color: white;
-      padding: 20px;
-      overflow-y: auto;
-      transition: 0.3s;
-      position: fixed;
-      height: 100vh;
-      left: 0;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .sidebar.collapsed {
-      width: 80px;
-    }
-
-    .sidebar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-
-    .toggle-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .sidebar-title {
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .sidebar.collapsed .sidebar-title {
-      display: none;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-      white-space: nowrap;
-    }
-
-    .nav-item:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .nav-item.ativo {
-      background: rgba(255, 255, 255, 0.3);
-      font-weight: 600;
-    }
-
-    .nav-item i {
-      margin-right: 12px;
-      min-width: 20px;
-    }
-
-    .sidebar.collapsed .nav-item span {
-      display: none;
-    }
-
-    .sidebar.collapsed .nav-item {
-      justify-content: center;
-      padding: 12px;
-      margin: 8px auto;
-    }
-
-    .sidebar-footer {
-      position: absolute;
-      bottom: 20px;
-      width: calc(100% - 40px);
-    }
-
-    .user-profile {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 12px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 10px;
-      font-size: 16px;
-    }
-
-    .user-info span {
-      font-size: 12px;
-    }
-
-    .sidebar.collapsed .user-info {
-      display: none;
-    }
-
-    .main-content {
-      flex: 1;
-      margin-left: 280px;
-      transition: 0.3s;
-      padding: 0;
-    }
-
-    .sidebar.collapsed ~ .main-content {
-      margin-left: 80px;
-    }
-
-    .header {
-      background: white;
-      padding: 20px 30px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      color: #00a651;
-    }
-
-    .header-right {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .btn-screenshot {
-      background: #00a651;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .btn-screenshot:hover {
-      background: #008c45;
-    }
-
-    .btn-logout {
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .btn-logout:hover {
-      background: #c82333;
-    }
-
-    .content {
-      padding: 30px;
-      min-height: calc(100vh - 70px);
-    }
-
-    .tab-buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-    }
-
-    .tab-btn {
-      padding: 10px 20px;
-      background: white;
-      border: 2px solid #ddd;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.3s;
-      font-size: 14px;
-    }
-
-    .tab-btn:hover {
-      border-color: #00a651;
-      color: #00a651;
-    }
-
-    .tab-btn.ativo {
-      background: #00a651;
-      color: white;
-      border-color: #00a651;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.ativo {
-      display: block;
-    }
-
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      border-left: 4px solid #00a651;
-    }
-
-    .card-titulo {
-      color: #999;
-      font-size: 12px;
-      margin-bottom: 8px;
-    }
-
-    .card-valor {
-      font-size: 32px;
-      font-weight: 700;
-      color: #00a651;
-    }
-
-    .status-liberado { border-left-color: #28a745; }
-    .status-liberado .card-valor { color: #28a745; }
-
-    .status-manutencao { border-left-color: #dc3545; }
-    .status-manutencao .card-valor { color: #dc3545; }
-
-    .status-colisao { border-left-color: #8B4513; }
-    .status-colisao .card-valor { color: #8B4513; }
-
-    .status-preventiva { border-left-color: #007bff; }
-    .status-preventiva .card-valor { color: #007bff; }
-
-    .status-agendado { border-left-color: #ffc107; }
-    .status-agendado .card-valor { color: #ffc107; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    thead {
-      background: #00a651;
-      color: white;
-    }
-
-    th, td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #f0f0f0;
-      font-size: 13px;
-    }
-
-    tbody tr:hover {
-      background: #f9f9f9;
-    }
-
-    .btn {
-      padding: 8px 16px;
-      background: #00a651;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .btn:hover {
-      background: #008c45;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal.ativo {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      max-width: 500px;
-      width: 90%;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .close-modal {
-      font-size: 28px;
-      cursor: pointer;
-      color: #999;
-    }
-
-    .close-modal:hover {
-      color: #333;
-    }
-
-    .frases-footer {
-      text-align: center;
-      padding: 20px;
-      color: #00a651;
-      font-style: italic;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .loading {
-      text-align: center;
-      color: #999;
-      padding: 20px;
-      font-size: 14px;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 80px;
-      }
-
-      .sidebar-title {
-        display: none;
-      }
-
-      .nav-item span {
-        display: none;
-      }
-
-      .nav-item {
-        justify-content: center;
-        padding: 12px;
-        margin: 8px auto;
-      }
-
-      .main-content {
-        margin-left: 80px;
-      }
-
-      .sidebar.collapsed ~ .main-content {
-        margin-left: 80px;
-      }
-
-      .cards-grid {
-        grid-template-columns: 1fr;
-      }
-
-      table {
-        font-size: 12px;
-      }
-
-      th, td {
-        padding: 8px;
-      }
-
-      .header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-      }
-
-      .header-right {
-        width: 100%;
-        justify-content: space-between;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard VLT Carioca</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --border: #e0e6ed;
+            --success: #4facfe;
+            --danger: #f5576c;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--light); }
+        .container { display: flex; height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px 20px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: width 0.3s ease;
+            position: relative;
+            z-index: 100;
+        }
+        .sidebar.collapsed { width: 80px; padding: 20px 10px; }
+        .sidebar.collapsed .nav-label { display: none; }
+        .sidebar.collapsed .logo span { display: none; }
+        .toggle-sidebar {
+            position: absolute;
+            top: 30px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .sidebar.collapsed .toggle-sidebar { transform: rotate(180deg); }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo i { font-size: 32px; color: var(--primary); }
+        .nav-menu { list-style: none; }
+        .nav-item {
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.7);
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(102,126,234,0.2);
+            color: white;
+            border-left-color: var(--primary);
+        }
+        .nav-item i { width: 20px; min-width: 20px; }
+        .nav-label { display: inline; }
+        .nav-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .breadcrumb { color: #7f8c8d; font-size: 14px; }
+        .top-right { display: flex; gap: 20px; align-items: center; }
+        .screenshot-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .screenshot-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .user-profile:hover { background: var(--light); }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .user-info { font-size: 13px; }
+        .user-name { font-weight: 600; color: var(--dark); }
+        .user-role { color: #7f8c8d; font-size: 11px; }
+        .content { flex: 1; overflow-y: auto; padding: 30px; position: relative; display: flex; flex-direction: column; }
+        .pages-wrapper { flex: 1; overflow-y: auto; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 28px; color: var(--dark); margin-bottom: 5px; }
+        .page-header p { color: #7f8c8d; font-size: 14px; }
+        .filter-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .download-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .download-btn {
+            padding: 10px 20px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .download-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,172,254,0.4); }
+        .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead { background: var(--light); }
+        th { padding: 15px; text-align: left; font-weight: 600; color: var(--dark); border-bottom: 2px solid var(--border); }
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: var(--light); }
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-liberado { background: #e8f8f5; color: #27ae60; }
+        .status-manutencao { background: #fdeaea; color: #e74c3c; }
+        .status-agendado { background: #e8f0fe; color: #4a7c9f; }
+        .status-colisao { background: #fff3cd; color: #856404; }
+        .btn-primary {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary i { margin-right: 8px; }
+        .center-content { text-align: center; padding: 60px 20px; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-close:hover { color: #333; }
+        .modal-title { font-size: 24px; font-weight: 600; margin-bottom: 30px; color: var(--dark); }
+        .modal-section { margin-bottom: 25px; }
+        .modal-label { font-size: 12px; color: #7f8c8d; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+        .modal-value { font-size: 16px; color: var(--dark); font-weight: 600; }
+        .modal-link { display: inline-block; color: var(--primary); text-decoration: none; cursor: pointer; font-weight: 600; }
+        .modal-link:hover { color: var(--secondary); }
+        .motivational-quote {
+            margin-top: auto;
+            padding-top: 30px;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            font-size: 14px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading { color: #667eea; }
+        @media (max-width: 768px) {
+            .top-bar { padding: 12px 15px; }
+            .screenshot-btn { padding: 6px 12px; font-size: 12px; }
+            .user-info { display: none; }
+            .content { padding: 15px; }
+            .page-header h1 { font-size: 20px; }
+            .filter-buttons { flex-direction: column; }
+            .filter-btn { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <span class="sidebar-title">VLT Carioca</span>
-      <button class="toggle-btn" onclick="toggleSidebar()">
-        <i class="fas fa-chevron-left"></i>
-      </button>
+    <div class="container">
+        <aside class="sidebar">
+            <button class="toggle-sidebar" onclick="toggleSidebar()">◀</button>
+            <div class="logo">
+                <i class="fas fa-train"></i>
+                <span>VLT Carioca</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showPage('dashboard')">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="nav-label">Dashboard</span>
+                </li>
+                <li class="nav-item" onclick="showPage('passagem')">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span class="nav-label">Passagem de Servico</span>
+                </li>
+                <li class="nav-item" onclick="showPage('novo_registro')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span class="nav-label">Novo Registro</span>
+                </li>
+                <li class="nav-item" onclick="showPage('relatorios')" id="relatorios-menu">
+                    <i class="fas fa-table"></i>
+                    <span class="nav-label">Relatorios</span>
+                </li>
+                <li class="nav-item" onclick="showPage('usuarios')" id="usuarios-menu">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-label">Usuarios</span>
+                </li>
+            </ul>
+            <div class="nav-divider"></div>
+            <ul class="nav-menu">
+                <li class="nav-item" onclick="openSupportModal()">
+                    <i class="fas fa-headset"></i>
+                    <span class="nav-label">Suporte</span>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main">
+            <div class="top-bar">
+                <div class="breadcrumb" id="breadcrumb">📊 Dashboard</div>
+                <div class="top-right">
+                    <button class="screenshot-btn" onclick="takeScreenshot()">
+                        <i class="fas fa-camera"></i> Screenshot
+                    </button>
+                    <div class="user-profile" onclick="openProfileModal()">
+                        <div class="user-avatar" id="userInitials">GJ</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">Guilherme Juraci</div>
+                            <div class="user-role" id="userRole">ADMIN</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="pages-wrapper">
+                    <!-- Dashboard -->
+                    <div class="page active" id="page-dashboard">
+                        <div class="page-header">
+                            <h1>📈 Dashboard Analitico</h1>
+                            <p>Graficos e indicadores em tempo real</p>
+                        </div>
+                        <div style="width: 100%; height: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                            <iframe src="https://lookerstudio.google.com/embed/reporting/95cf4b2a-b4ef-4aa1-910c-423461799e6c" frameborder="0" style="border: 0; width: 100%; height: 100%;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- Passagem de Servico -->
+                    <div class="page" id="page-passagem">
+                        <div class="page-header">
+                            <h1>📋 Passagem de Servico</h1>
+                            <p>Resumo do ultimo plantao - Transicao de turno</p>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data/Hora</th>
+                                        <th>Tecnico</th>
+                                        <th>Trem</th>
+                                        <th>Sistema</th>
+                                        <th>Descricao</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="passagem-table">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 40px;" class="loading">⏳ Carregando dados...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Novo Registro -->
+                    <div class="page" id="page-novo_registro">
+                        <div class="page-header">
+                            <h1>➕ Novo Registro</h1>
+                            <p>Preencha um novo registro de falha ou evento</p>
+                        </div>
+                        <div class="center-content">
+                            <a href="https://forms.gle/krwFHMg1V6YocmGY9" target="_blank" class="btn-primary">
+                                <i class="fas fa-external-link-alt"></i> Abrir Formulario de Novo Registro
+                            </a>
+                            <p style="margin-top: 30px; color: #7f8c8d; font-size: 14px;">
+                                Ao preencher e enviar o formulario, os dados serao adicionados automaticamente a planilha central.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Relatorios -->
+                    <div class="page" id="page-relatorios">
+                        <div class="page-header">
+                            <h1>📊 Relatorios de Falhas</h1>
+                            <p>Selecione o periodo e filtros desejados para gerar relatorio</p>
+                        </div>
+                        <div class="filter-buttons">
+                            <button class="filter-btn" onclick="filterAndShowReport(30)">📅 1 Mes</button>
+                            <button class="filter-btn" onclick="filterAndShowReport(60)">📅 2 Meses</button>
+                            <button class="filter-btn" onclick="filterAndShowReport(90)">📅 3 Meses</button>
+                            <button class="filter-btn" onclick="filterAndShowReport(180)">📅 6 Meses</button>
+                            <button class="filter-btn" onclick="filterAndShowReport(365)">📅 1 Ano</button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Tecnico</th>
+                                        <th>Trem</th>
+                                        <th>Sistema</th>
+                                        <th>IOS</th>
+                                        <th>Descricao</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="relatorio-table">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 40px;">Clique em um periodo para gerar o relatorio</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="download-buttons" id="download-buttons" style="display: none;">
+                            <button class="download-btn" onclick="downloadCSV()">
+                                <i class="fas fa-file-csv"></i> Download CSV
+                            </button>
+                            <button class="download-btn" onclick="downloadPDF()">
+                                <i class="fas fa-file-pdf"></i> Download PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Usuarios -->
+                    <div class="page" id="page-usuarios">
+                        <div class="page-header">
+                            <h1>👥 Usuarios do Sistema</h1>
+                            <p>Lista de usuarios cadastrados</p>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                        <th>Telefone</th>
+                                        <th>Tipo</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usuarios-table">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 40px;" class="loading">⏳ Carregando usuarios...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="motivational-quote" id="motivational-quote">
+                    💪 Excelencia é a jornada, nao o destino!
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="nav-item ativo" onclick="mudarAba('dashboard')">
-      <i class="fas fa-chart-line"></i>
-      <span>Dashboard</span>
-    </div>
-
-    <div class="nav-item" onclick="mudarAba('passagem')">
-      <i class="fas fa-history"></i>
-      <span>Passagem de Serviço</span>
-    </div>
-
-    <div class="nav-item" onclick="mudarAba('novo-registro')">
-      <i class="fas fa-plus-circle"></i>
-      <span>Novo Registro</span>
-    </div>
-
-    <div class="nav-item" id="nav-relatorios" style="display: none;" onclick="mudarAba('relatorios')">
-      <i class="fas fa-file-alt"></i>
-      <span>Relatórios</span>
-    </div>
-
-    <div class="nav-item" id="nav-usuarios" style="display: none;" onclick="mudarAba('usuarios')">
-      <i class="fas fa-users"></i>
-      <span>Usuários</span>
-    </div>
-
-    <div class="nav-item" onclick="abrirSuporteModal()">
-      <i class="fas fa-headset"></i>
-      <span>Suporte</span>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="user-profile" onclick="abrirSuporteModal()">
-        <div class="user-avatar" id="userAvatar">GJ</div>
-        <div class="user-info">
-          <strong id="userName">Guilherme</strong>
-          <span id="userType">Usuário</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="main-content">
-    <div class="header">
-      <h1>Painel de Controle - VLT Carioca</h1>
-      <div class="header-right">
-        <button class="btn-screenshot" onclick="tirarScreenshot()">
-          <i class="fas fa-camera"></i> Screenshot
-        </button>
-        <button class="btn-logout" onclick="logout()">
-          <i class="fas fa-sign-out-alt"></i> Sair
-        </button>
-      </div>
-    </div>
-
-    <div class="content">
-      <!-- DASHBOARD -->
-      <div id="dashboard" class="tab-content ativo">
-        <div class="tab-buttons">
-          <button class="tab-btn ativo" onclick="ativarSubAba(event, 'status-trens')">Status dos Trens</button>
-          <button class="tab-btn" onclick="ativarSubAba(event, 'graficos')">Gráficos Looker</button>
-        </div>
-
-        <div id="status-trens">
-          <div class="cards-grid" id="statusCards">
-            <div class="loading">Carregando dados...</div>
-          </div>
-        </div>
-
-        <div id="graficos" style="display: none;">
-          <iframe width="100%" height="700" src="https://lookerstudio.google.com/embed/reporting/95cf4b2a-b4ef-4aa1-910c-423461799e6c/page/vl9eF" frameborder="0" style="border:0; border-radius: 8px;" allowfullscreen></iframe>
-        </div>
-      </div>
-
-      <!-- PASSAGEM DE SERVIÇO -->
-      <div id="passagem" class="tab-content">
-        <h2 style="color: #00a651; margin-bottom: 20px;">Última Passagem de Serviço</h2>
-        <div id="passagemConteudo">
-          <div class="loading">Carregando dados...</div>
-        </div>
-      </div>
-
-      <!-- NOVO REGISTRO -->
-      <div id="novo-registro" class="tab-content">
-        <h2 style="color: #00a651; margin-bottom: 20px;">Registrar Nova Falha</h2>
-        <p style="margin-bottom: 20px; color: #666;">Clique no botão abaixo para abrir o formulário e registrar uma nova falha:</p>
-        <a href="https://forms.gle/krwFHMg1V6YocmGY9" target="_blank" class="btn" style="text-decoration: none; display: inline-block;">
-          <i class="fas fa-external-link-alt"></i> Abrir Formulário
-        </a>
-      </div>
-
-      <!-- RELATÓRIOS -->
-      <div id="relatorios" class="tab-content">
-        <h2 style="color: #00a651; margin-bottom: 20px;">Relatórios</h2>
-        <div class="button-group">
-          <button class="btn" onclick="filtrarRelatorio(30)">1 Mês</button>
-          <button class="btn" onclick="filtrarRelatorio(60)">2 Meses</button>
-          <button class="btn" onclick="filtrarRelatorio(90)">3 Meses</button>
-          <button class="btn" onclick="filtrarRelatorio(180)">6 Meses</button>
-          <button class="btn" onclick="filtrarRelatorio(365)">1 Ano</button>
-          <button class="btn" style="background: #667eea;" onclick="exportarRelatorio('excel')">
-            <i class="fas fa-download"></i> Excel
-          </button>
-          <button class="btn" style="background: #667eea;" onclick="exportarRelatorio('pdf')">
-            <i class="fas fa-download"></i> PDF
-          </button>
-        </div>
-        <table id="tabelaRelatorio">
-          <thead>
-            <tr>
-              <th>Data/Hora</th>
-              <th>Técnico</th>
-              <th>Trem</th>
-              <th>Sistema</th>
-              <th>IOS</th>
-              <th>Descrição</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="bodyRelatorio">
-            <tr><td colspan="7" class="loading">Carregando dados...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- USUÁRIOS -->
-      <div id="usuarios" class="tab-content">
-        <h2 style="color: #00a651; margin-bottom: 20px;">Usuários do Sistema</h2>
-        <table id="tabelaUsuarios">
-          <thead>
-            <tr>
-              <th>Usuário</th>
-              <th>Nome Completo</th>
-              <th>Email</th>
-              <th>Tipo</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="bodyUsuarios">
-            <tr><td colspan="5" class="loading">Carregando dados...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="frases-footer" id="frasMotivacional">
-        💪 Segurança em primeiro lugar - proteja você e sua equipe!
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL SUPORTE -->
-  <div id="modalSuporte" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Suporte</h2>
-        <span class="close-modal" onclick="fecharSuporte()">&times;</span>
-      </div>
-      <p style="margin-bottom: 15px; color: #666;">Em caso de dúvidas ou problemas:</p>
-      <p><strong>Contato:</strong></p>
-      <p style="margin: 10px 0;"><strong>Guilherme Juraci</strong></p>
-      <p style="margin: 10px 0;">
-        📧 <a href="mailto:guilherme.fernandes@motiva.com.br" style="color: #00a651;">guilherme.fernandes@motiva.com.br</a>
-      </p>
-      <p style="margin: 10px 0;">
-        💬 <a href="https://wa.me/5521987654321" target="_blank" style="color: #00a651;">WhatsApp</a>
-      </p>
-    </div>
-  </div>
-
-  <script>
-    const frases = [
-      "💪 Segurança em primeiro lugar!",
-      "🚂 Velocidade com responsabilidade",
-      "✅ Qualidade em cada passagem",
-      "🛡️ Proteção total da frota",
-      "⚙️ Manutenção em dia, trens na linha",
-      "🎯 Precisão nas operações",
-      "🔧 Técnico de excelência",
-      "🌟 Seu trabalho salva vidas",
-      "💼 Profissionalismo total",
-      "🚀 Sempre buscando melhorar",
-      "🏆 Campeões do transporte",
-      "❤️ Dedicação ferroviária",
-      "🔐 Confiabilidade absoluta",
-      "📊 Dados precisos, decisões certas",
-      "🎓 Conhecimento é poder",
-      "🤝 Trabalho em equipe",
-      "🌍 Impacto positivo no Rio",
-      "⭐ Excelência operacional",
-      "🔄 Ciclos de melhoria contínua",
-      "🏅 Orgulho ferroviário"
-    ];
-
-    const REGISTRO_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1131259241&single=true&output=csv";
-    const USUARIOS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1605075317&single=true&output=csv";
-
-    let dadosRegistro = [];
-    let dadosUsuarios = [];
-
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('collapsed');
-    }
-
-    function mudarAba(abaName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('ativo'));
-      document.getElementById(abaName).classList.add('ativo');
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('ativo'));
-      event.target.closest('.nav-item').classList.add('ativo');
-
-      if (abaName === 'relatorios') carregarRelatorios(30);
-      if (abaName === 'usuarios') carregarUsuarios();
-      if (abaName === 'passagem') carregarPassagem();
-      if (abaName === 'dashboard') carregarDashboard();
-    }
-
-    function ativarSubAba(event, subAbaName) {
-      document.querySelectorAll('#dashboard > div').forEach(el => { if (el.id && el.id.startsWith('status') || el.id.startsWith('graficos')) el.style.display = 'none'; });
-      document.getElementById(subAbaName).style.display = 'block';
-      event.target.classList.add('ativo');
-      event.target.parentElement.querySelectorAll('.tab-btn').forEach(btn => { if (btn !== event.target) btn.classList.remove('ativo'); });
-    }
-
-    async function carregarDashboard() {
-      try {
-        const response = await fetch(REGISTRO_URL);
-        const csv = await response.text();
-        dadosRegistro = parseCSV(csv);
-        renderizarStatusTrens();
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-      }
-    }
-
-    function renderizarStatusTrens() {
-      const statusMap = {};
-      const statusPorTrem = {};
-
-      for (let i = 1; i <= 132; i++) {
-        statusPorTrem[`VLT ${i}`] = 'LIBERADO';
-      }
-
-      dadosRegistro.forEach(linha => {
-        if (linha.length > 11) {
-          const trem = String(linha[6] || '').trim();
-          const status = String(linha[11] || '').toUpperCase().trim();
-          if (trem && status) {
-            statusPorTrem[trem] = status;
-          }
-        }
-      });
-
-      Object.entries(statusPorTrem).forEach(([trem, status]) => {
-        if (!statusMap[status]) statusMap[status] = 0;
-        statusMap[status]++;
-      });
-
-      let html = `
-        <div class="card status-liberado">
-          <div class="card-titulo">Liberados</div>
-          <div class="card-valor">${statusMap['LIBERADO'] || 0}</div>
-        </div>
-        <div class="card status-manutencao">
-          <div class="card-titulo">Em Manutenção</div>
-          <div class="card-valor">${statusMap['MANUTENCAO'] || 0}</div>
-        </div>
-        <div class="card status-colisao">
-          <div class="card-titulo">Colisão</div>
-          <div class="card-valor">${statusMap['COLISAO'] || 0}</div>
-        </div>
-        <div class="card status-agendado">
-          <div class="card-titulo">Agendado</div>
-          <div class="card-valor">${statusMap['AGENDADO'] || 0}</div>
-        </div>
-        <div class="card status-preventiva">
-          <div class="card-titulo">Preventiva</div>
-          <div class="card-valor">${statusMap['PREVENTIVA'] || 0}</div>
-        </div>
-      `;
-      document.getElementById('statusCards').innerHTML = html;
-    }
-
-    async function carregarPassagem() {
-      try {
-        const response = await fetch(REGISTRO_URL);
-        const csv = await response.text();
-        dadosRegistro = parseCSV(csv);
-        const ultimosRegistros = dadosRegistro.slice(-5).reverse();
-        
-        let html = '<table><thead><tr><th>Data/Hora</th><th>Técnico</th><th>Trem</th><th>Sistema</th><th>IOS</th><th>Descrição</th><th>Status</th></tr></thead><tbody>';
-        
-        ultimosRegistros.forEach(linha => {
-          if (linha.length > 11) {
-            const status = String(linha[11] || '').toUpperCase();
-            let corBg = '#28a745';
-            if (status.includes('MANUTENCAO')) corBg = '#dc3545';
-            else if (status.includes('COLISAO')) corBg = '#8B4513';
-            else if (status.includes('AGENDADO')) corBg = '#ffc107';
-            else if (status.includes('PREVENTIVA')) corBg = '#007bff';
+    <!-- Modal Perfil -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProfileModal()">✕</button>
+            <div class="modal-title">👤 Meu Perfil</div>
             
-            html += `<tr>
-              <td>${linha[0] || ''}</td>
-              <td>${linha[1] || ''}</td>
-              <td><strong>${linha[6] || ''}</strong></td>
-              <td>${linha[7] || ''}</td>
-              <td>${linha[8] || ''}</td>
-              <td>${linha[9] || ''}</td>
-              <td><span style="background: ${corBg}; color: white; padding: 4px 8px; border-radius: 4px;">${status}</span></td>
-            </tr>`;
-          }
-        });
-        
-        html += '</tbody></table>';
-        document.getElementById('passagemConteudo').innerHTML = html;
-      } catch (error) {
-        document.getElementById('passagemConteudo').innerHTML = '<p style="color: #dc3545;">Erro ao carregar dados</p>';
-      }
-    }
+            <div class="modal-section">
+                <div class="modal-label">Nome Completo</div>
+                <div class="modal-value" id="perfil-nome">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Usuario</div>
+                <div class="modal-value" id="perfil-usuario">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Email</div>
+                <div class="modal-value" id="perfil-email">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Telefone</div>
+                <div class="modal-value" id="perfil-telefone">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Endereco</div>
+                <div class="modal-value" id="perfil-endereco">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Matricula</div>
+                <div class="modal-value" id="perfil-matricula">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Tipo</div>
+                <div class="modal-value" id="perfil-tipo">-</div>
+            </div>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);">
+                <button style="width: 100%; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sair do Sistema
+                </button>
+            </div>
+        </div>
+    </div>
 
-    async function carregarRelatorios(dias) {
-      try {
-        const response = await fetch(REGISTRO_URL);
-        const csv = await response.text();
-        dadosRegistro = parseCSV(csv);
-        
-        const dataAtual = new Date();
-        const dataLimite = new Date(dataAtual.getTime() - dias * 24 * 60 * 60 * 1000);
-        
-        const registrosFiltrados = dadosRegistro.filter(linha => {
-          if (linha.length > 0) {
-            try {
-              const [dia, mes, ano, hora, minuto, segundo] = linha[0].match(/\d+/g) || [];
-              if (dia && mes && ano) {
-                const data = new Date(ano, mes - 1, dia, hora || 0, minuto || 0, segundo || 0);
-                return data >= dataLimite && data <= dataAtual;
-              }
-            } catch (e) {}
-          }
-          return false;
-        });
-
-        let html = '';
-        registrosFiltrados.forEach(linha => {
-          if (linha.length > 11) {
-            const status = String(linha[11] || '').toUpperCase();
-            let corBg = '#28a745';
-            if (status.includes('MANUTENCAO')) corBg = '#dc3545';
-            else if (status.includes('COLISAO')) corBg = '#8B4513';
-            else if (status.includes('AGENDADO')) corBg = '#ffc107';
-            else if (status.includes('PREVENTIVA')) corBg = '#007bff';
+    <!-- Modal Suporte -->
+    <div id="supportModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSupportModal()">✕</button>
+            <div class="modal-title">📞 Suporte</div>
             
-            html += `<tr>
-              <td>${linha[0] || ''}</td>
-              <td>${linha[1] || ''}</td>
-              <td>${linha[6] || ''}</td>
-              <td>${linha[7] || ''}</td>
-              <td>${linha[8] || ''}</td>
-              <td>${linha[9] || ''}</td>
-              <td><span style="background: ${corBg}; color: white; padding: 4px 8px; border-radius: 4px;">${status}</span></td>
-            </tr>`;
-          }
-        });
-        
-        document.getElementById('bodyRelatorio').innerHTML = html || '<tr><td colspan="7" class="loading">Nenhum dado encontrado</td></tr>';
-      } catch (error) {
-        document.getElementById('bodyRelatorio').innerHTML = '<tr><td colspan="7" class="loading">Erro ao carregar dados</td></tr>';
-      }
-    }
+            <div class="modal-section">
+                <div class="modal-label">Entre em contato com</div>
+                <div class="modal-value">Guilherme Juraci</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Email</div>
+                <div class="modal-value">
+                    <a href="mailto:guilherme.fernandes@motiva.com.br" class="modal-link">
+                        📧 guilherme.fernandes@motiva.com.br
+                    </a>
+                </div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">WhatsApp</div>
+                <div class="modal-value">
+                    <a href="https://wa.me/5521987654321" class="modal-link" target="_blank">
+                        💬 (21) 98765-4321
+                    </a>
+                </div>
+            </div>
+            <div style="background: #f0f7ff; padding: 15px; border-radius: 5px; border-left: 4px solid var(--primary); margin-top: 20px; font-size: 14px; color: var(--dark); line-height: 1.6;">
+                <strong>Precisa de ajuda?</strong><br>
+                Estou aqui para suportar você! Entre em contato via email ou WhatsApp. 🙌
+            </div>
+        </div>
+    </div>
 
-    async function carregarUsuarios() {
-      try {
-        const response = await fetch(USUARIOS_URL);
-        const csv = await response.text();
-        dadosUsuarios = parseCSV(csv);
-        
-        let html = '';
-        dadosUsuarios.slice(1).forEach(linha => {
-          if (linha.length > 4) {
-            html += `<tr>
-              <td>${linha[0] || ''}</td>
-              <td>${linha[6] || ''}</td>
-              <td>${linha[7] || ''}</td>
-              <td>${linha[2] || ''}</td>
-              <td>${linha[3] || ''}</td>
-            </tr>`;
-          }
-        });
-        
-        document.getElementById('bodyUsuarios').innerHTML = html || '<tr><td colspan="5" class="loading">Nenhum usuário encontrado</td></tr>';
-      } catch (error) {
-        document.getElementById('bodyUsuarios').innerHTML = '<tr><td colspan="5" class="loading">Erro ao carregar dados</td></tr>';
-      }
-    }
+    <script>
+        const motivationalQuotes = [
+            "💪 Excelencia é a jornada, nao o destino!",
+            "🚆 Seguranca em primeiro lugar, sempre!",
+            "🛡️ Protecao é responsabilidade de todos!",
+            "⚡ Somos o coracao ferroviario do Rio!",
+            "🎯 Precisao e dedicao em cada operacao!",
+            "👥 Juntos fazemos a diferenca!",
+            "🌟 VLT Carioca: Mobilidade com seguranca!",
+            "✅ Qualidade: nosso compromisso!",
+            "🚀 Inovacao todos os dias!",
+            "❤️ Paixao pelo que fazemos!",
+            "🏆 Somos os melhores ferroviarios!",
+            "🔧 Manutencao impecavel, sempre!",
+            "⭐ Faca sua parte, sempre com cuidado!",
+            "💯 100% de comprometimento!",
+            "🎖️ Orgulho de servir a populacao!",
+            "🚇 Conectando vidas, cidades e sonhos!",
+            "🛡️ Cada detalhe conta para a seguranca!",
+            "👨‍🔧 Profissionalismo em tudo o que fazemos!",
+            "🌉 VLT: Lideranca em mobilidade urbana!",
+            "💡 Ideias para melhorar a cada dia!"
+        ];
 
-    function filtrarRelatorio(dias) {
-      carregarRelatorios(dias);
-    }
-
-    function exportarRelatorio(formato) {
-      const tabela = document.getElementById('tabelaRelatorio');
-      if (formato === 'excel') {
-        const wb = XLSX.utils.table_to_book(tabela);
-        XLSX.writeFile(wb, 'Relatorio_VLT.xlsx');
-      } else if (formato === 'pdf') {
-        html2pdf().set({ margin: 10, filename: 'Relatorio_VLT.pdf' }).save(tabela);
-      }
-    }
-
-    async function tirarScreenshot() {
-      try {
-        const canvas = await html2canvas(document.querySelector('.content'), { scale: 2 });
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
-        link.download = 'Dashboard_VLT_' + new Date().getTime() + '.png';
-        link.click();
-      } catch (error) {
-        alert('Erro ao tirar screenshot: ' + error.message);
-      }
-    }
-
-    function parseCSV(csv) {
-      const linhas = csv.trim().split('\n');
-      return linhas.map(linha => {
-        const cells = [];
-        let cell = '';
-        let inQuotes = false;
-        for (let char of linha) {
-          if (char === '"') inQuotes = !inQuotes;
-          else if (char === ',' && !inQuotes) { cells.push(cell.trim()); cell = ''; }
-          else cell += char;
+        function updateMotivationalQuote() {
+            const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+            document.getElementById('motivational-quote').textContent = quote;
         }
-        cells.push(cell.trim());
-        return cells;
-      });
-    }
 
-    function abrirSuporteModal() {
-      document.getElementById('modalSuporte').classList.add('ativo');
-    }
+        setInterval(updateMotivationalQuote, 30000);
 
-    function fecharSuporte() {
-      document.getElementById('modalSuporte').classList.remove('ativo');
-    }
+        const REGISTRO_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1131259241&single=true&output=csv';
+        const USUARIOS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1605075317&single=true&output=csv';
 
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'index.html';
-    }
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length === 0) return [];
+            
+            const headers = lines[0].split(',').map(h => h.trim());
+            const rows = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const obj = {};
+                const values = lines[i].split(',');
+                headers.forEach((h, idx) => {
+                    obj[h] = values[idx] ? values[idx].trim() : '';
+                });
+                rows.push(obj);
+            }
+            return rows;
+        }
 
-    function mostrarFraseAleatoria() {
-      const frase = frases[Math.floor(Math.random() * frases.length)];
-      document.getElementById('frasMotivacional').textContent = frase;
-    }
+        let userProfileData = null;
 
-    window.addEventListener('load', () => {
-      const usuario = localStorage.getItem('usuario');
-      if (!usuario) {
-        window.location.href = 'index.html';
-        return;
-      }
+        function checkAuth() {
+            const user = localStorage.getItem('usuario');
+            const tipo = localStorage.getItem('tipo');
+            if (!user) {
+                window.location.href = 'index.html';
+                return null;
+            }
+            return { usuario: user, tipo: tipo };
+        }
 
-      const tipo = localStorage.getItem('tipo');
-      const nomeCompleto = localStorage.getItem('nome_completo') || usuario;
-      const iniciais = nomeCompleto.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);
+        const currentUser = checkAuth();
 
-      document.getElementById('userName').textContent = nomeCompleto;
-      document.getElementById('userType').textContent = tipo || 'Usuário';
-      document.getElementById('userAvatar').textContent = iniciais || 'GJ';
+        if (currentUser) {
+            document.getElementById('userName').textContent = localStorage.getItem('usuario') || 'Usuario';
+            document.getElementById('userRole').textContent = localStorage.getItem('tipo') || 'Usuário';
+            const initials = (localStorage.getItem('usuario') || 'U')[0].toUpperCase() + (localStorage.getItem('usuario') || 'U').split('.')[1]?.[0]?.toUpperCase() || 'R';
+            document.getElementById('userInitials').textContent = initials;
 
-      if (tipo === 'ADMIN') {
-        document.getElementById('nav-relatorios').style.display = 'flex';
-        document.getElementById('nav-usuarios').style.display = 'flex';
-      }
+            if (currentUser.tipo !== 'ADMIN') {
+                document.getElementById('relatorios-menu').style.display = 'none';
+                document.getElementById('usuarios-menu').style.display = 'none';
+            }
 
-      carregarDashboard();
-      mostrarFraseAleatoria();
-      setInterval(mostrarFraseAleatoria, 8000);
-    });
+            carregarPerfilUsuario();
+        }
 
-    window.onclick = function(event) {
-      const modal = document.getElementById('modalSuporte');
-      if (event.target === modal) {
-        modal.classList.remove('ativo');
-      }
-    }
-  </script>
+        function carregarPerfilUsuario() {
+            const usuario = localStorage.getItem('usuario');
+            fetch(USUARIOS_CSV)
+                .then(r => r.text())
+                .then(csv => {
+                    const rows = parseCSV(csv);
+                    const userRow = rows.find(r => r['Usuario'] === usuario || r['usuario'] === usuario);
+                    if (userRow) {
+                        userProfileData = userRow;
+                    }
+                })
+                .catch(e => console.error('Erro ao carregar perfil:', e));
+        }
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+        }
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            
+            document.getElementById('page-' + pageName).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+
+            const titles = {
+                'dashboard': '📊 Dashboard',
+                'passagem': '📋 Passagem de Servico',
+                'novo_registro': '➕ Novo Registro',
+                'relatorios': '📊 Relatorios',
+                'usuarios': '👥 Usuarios'
+            };
+            document.getElementById('breadcrumb').textContent = titles[pageName] || pageName;
+
+            updateMotivationalQuote();
+
+            if (pageName === 'passagem') loadPassagemData();
+            if (pageName === 'usuarios') loadUsuarios();
+        }
+
+        function loadPassagemData() {
+            fetch(REGISTRO_CSV)
+                .then(r => r.text())
+                .then(csv => {
+                    const rows = parseCSV(csv);
+                    const lastRows = rows.slice(-5).reverse();
+                    
+                    const table = document.getElementById('passagem-table');
+                    if (lastRows.length === 0) {
+                        table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum registro encontrado</td></tr>';
+                    } else {
+                        table.innerHTML = lastRows.map(r => `
+                            <tr>
+                                <td>${r['Carimbo de data/hora'] || '-'}</td>
+                                <td>${r['NOME'] || '-'}</td>
+                                <td>${r['NMERO DO TREM:'] || '-'}</td>
+                                <td>${r['SISTEMA'] || '-'}</td>
+                                <td>${r['DESCRIO DETALHADA'] || '-'}</td>
+                                <td><span class="status-badge status-${(r['STATUS ATUAL DO TREM'] || 'liberado').toLowerCase()}">${r['STATUS ATUAL DO TREM'] || '-'}</span></td>
+                            </tr>
+                        `).join('');
+                    }
+                })
+                .catch(e => {
+                    console.error('Erro:', e);
+                    document.getElementById('passagem-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Erro ao carregar dados</td></tr>';
+                });
+        }
+
+        function loadUsuarios() {
+            fetch(USUARIOS_CSV)
+                .then(r => r.text())
+                .then(csv => {
+                    const rows = parseCSV(csv);
+                    const table = document.getElementById('usuarios-table');
+                    if (rows.length === 0) {
+                        table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum usuario encontrado</td></tr>';
+                    } else {
+                        table.innerHTML = rows.map(r => `
+                            <tr>
+                                <td>${r['Usuario'] || r['usuario'] || '-'}</td>
+                                <td>${r['Nome_Completo'] || r['nome_completo'] || '-'}</td>
+                                <td>${r['Email'] || r['email'] || '-'}</td>
+                                <td>${r['Telefone'] || r['telefone'] || '-'}</td>
+                                <td><span style="padding:4px 12px;border-radius:12px;background:rgba(102,126,234,0.1);color:#667eea;font-size:12px;font-weight:600;">${r['Tipo'] || r['tipo'] || '-'}</span></td>
+                                <td><span style="padding:4px 12px;border-radius:12px;background:#e8f8f5;color:#27ae60;font-size:12px;font-weight:600;">${r['Ativo'] || r['ativo'] || '-'}</span></td>
+                            </tr>
+                        `).join('');
+                    }
+                })
+                .catch(e => {
+                    console.error('Erro:', e);
+                    document.getElementById('usuarios-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Erro ao carregar usuarios</td></tr>';
+                });
+        }
+
+        let currentReportData = [];
+
+        function filterAndShowReport(days) {
+            fetch(REGISTRO_CSV)
+                .then(r => r.text())
+                .then(csv => {
+                    const rows = parseCSV(csv);
+                    const now = new Date();
+                    const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+                    
+                    currentReportData = rows.filter(r => {
+                        try {
+                            const rowDate = new Date(r['Carimbo de data/hora']);
+                            return rowDate >= startDate && rowDate <= now;
+                        } catch {
+                            return false;
+                        }
+                    });
+
+                    const table = document.getElementById('relatorio-table');
+                    if (currentReportData.length === 0) {
+                        table.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Nenhum registro no periodo</td></tr>';
+                    } else {
+                        table.innerHTML = currentReportData.map(r => `
+                            <tr>
+                                <td>${r['Carimbo de data/hora'] || '-'}</td>
+                                <td>${r['NOME'] || '-'}</td>
+                                <td>${r['NMERO DO TREM:'] || '-'}</td>
+                                <td>${r['SISTEMA'] || '-'}</td>
+                                <td>${r['CDIGO IOS DA FALHA'] || '-'}</td>
+                                <td>${r['DESCRIO DETALHADA'] || '-'}</td>
+                                <td><span class="status-badge status-${(r['STATUS ATUAL DO TREM'] || 'liberado').toLowerCase()}">${r['STATUS ATUAL DO TREM'] || '-'}</span></td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    document.getElementById('download-buttons').style.display = 'flex';
+                })
+                .catch(e => {
+                    console.error('Erro:', e);
+                    document.getElementById('relatorio-table').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Erro ao carregar relatorio</td></tr>';
+                });
+        }
+
+        function downloadCSV() {
+            if (currentReportData.length === 0) {
+                alert('Nenhum dado para exportar');
+                return;
+            }
+            const ws = XLSX.utils.json_to_sheet(currentReportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Relatorio');
+            XLSX.writeFile(wb, 'VLT_Relatorio_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+        }
+
+        function downloadPDF() {
+            if (currentReportData.length === 0) {
+                alert('Nenhum dado para exportar');
+                return;
+            }
+            const element = document.getElementById('relatorio-table');
+            const opt = {
+                margin: 10,
+                filename: 'VLT_Relatorio.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function takeScreenshot() {
+            const element = document.querySelector('.pages-wrapper');
+            html2canvas(element, { allowTaint: true, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'VLT_Screenshot_' + new Date().toLocaleString('pt-BR').replace(/[/\\:]/g, '-') + '.png';
+                link.click();
+            });
+        }
+
+        function openProfileModal() { 
+            if (userProfileData) {
+                document.getElementById('perfil-nome').textContent = userProfileData['Nome_Completo'] || userProfileData['nome_completo'] || '-';
+                document.getElementById('perfil-usuario').textContent = userProfileData['Usuario'] || userProfileData['usuario'] || '-';
+                document.getElementById('perfil-email').textContent = userProfileData['Email'] || userProfileData['email'] || '-';
+                document.getElementById('perfil-telefone').textContent = userProfileData['Telefone'] || userProfileData['telefone'] || '-';
+                document.getElementById('perfil-endereco').textContent = userProfileData['Endereco'] || userProfileData['endereco'] || '-';
+                document.getElementById('perfil-matricula').textContent = userProfileData['Matricula'] || userProfileData['matricula'] || '-';
+                document.getElementById('perfil-tipo').textContent = userProfileData['Tipo'] || userProfileData['tipo'] || '-';
+            }
+            document.getElementById('profileModal').classList.add('show'); 
+        }
+        function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
+        function openSupportModal() { document.getElementById('supportModal').classList.add('show'); }
+        function closeSupportModal() { document.getElementById('supportModal').classList.remove('show'); }
+
+        document.getElementById('profileModal').addEventListener('click', function(e) {
+            if (e.target === this) closeProfileModal();
+        });
+        document.getElementById('supportModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSupportModal();
+        });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        updateMotivationalQuote();
+    </script>
 </body>
 </html>
