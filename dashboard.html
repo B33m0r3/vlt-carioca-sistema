@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard VLT Carioca</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --border: #e0e6ed;
+            --success: #4facfe;
+            --danger: #f5576c;
+            --warning: #ffa726;
+            --info: #29b6f6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--light); }
+        .container { display: flex; height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px 20px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: width 0.3s ease;
+            position: relative;
+            z-index: 100;
+        }
+        .sidebar.collapsed { width: 80px; padding: 20px 10px; }
+        .sidebar.collapsed .nav-label, .sidebar.collapsed .logo span { display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; }
+        .toggle-sidebar {
+            position: absolute;
+            top: 30px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .sidebar.collapsed .toggle-sidebar { transform: rotate(180deg); }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo i { font-size: 32px; color: var(--primary); }
+        .nav-menu { list-style: none; }
+        .nav-item {
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.7);
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(102,126,234,0.2);
+            color: white;
+            border-left-color: var(--primary);
+        }
+        .nav-item i { width: 20px; min-width: 20px; }
+        .nav-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .breadcrumb { color: #7f8c8d; font-size: 14px; }
+        .top-right { display: flex; gap: 20px; align-items: center; }
+        .screenshot-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .screenshot-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        .user-profile:hover { background: var(--light); }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .user-info { font-size: 13px; }
+        .user-name { font-weight: 600; color: var(--dark); }
+        .user-role { color: #7f8c8d; font-size: 11px; }
+        .content { flex: 1; overflow-y: auto; padding: 30px; position: relative; display: flex; flex-direction: column; }
+        .pages-wrapper { flex: 1; overflow-y: auto; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 28px; color: var(--dark); margin-bottom: 5px; }
+        .page-header p { color: #7f8c8d; font-size: 14px; }
+
+        /* Dashboard Cards */
+        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        .card-info h3 { font-size: 24px; color: var(--dark); margin-bottom: 5px; }
+        .card-info p { color: #7f8c8d; font-size: 14px; }
+        .card-manutencao .card-icon { background: linear-gradient(135deg, var(--danger), #ff6b6b); }
+        .card-liberado .card-icon { background: linear-gradient(135deg, var(--success), #26c6da); }
+        .card-agendado .card-icon { background: linear-gradient(135deg, var(--warning), #ffb74d); }
+        .card-total .card-icon { background: linear-gradient(135deg, var(--info), #4fc3f7); }
+
+        /* Loading */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            border-radius: 8px;
+        }
+        .loading-overlay.hidden { display: none; }
+        .spinner {
+            border: 5px solid var(--border);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Filtros Relatórios */
+        .filter-container { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        .filter-input { padding: 10px 15px; border: 2px solid var(--border); border-radius: 6px; font-size: 14px; transition: border-color 0.3s; }
+        .filter-input:focus { outline: none; border-color: var(--primary); }
+        .filter-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+            transition: all 0.3s;
+        }
+        .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .table-container { background: white; border-radius: 8px; overflow-x: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead { background: var(--light); }
+        th { padding: 15px; text-align: left; font-weight: 600; color: var(--dark); border-bottom: 2px solid var(--border); }
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: var(--light); }
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-liberado { background: #e8f8f5; color: #27ae60; }
+        .status-manutencao { background: #fdeaea; color: #e74c3c; }
+        .status-agendado { background: #e8f0fe; color: #4a7c9f; }
+        .status-colisao { background: #fff3cd; color: #856404; }
+        .status-preventiva { background: #e1f5fe; color: #0277bd; }
+
+        .btn-primary {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary i { margin-right: 8px; }
+        .center-content { text-align: center; padding: 60px 20px; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-close:hover { color: #333; }
+        .modal-title { font-size: 24px; font-weight: 600; margin-bottom: 30px; color: var(--dark); }
+        .modal-section { margin-bottom: 25px; }
+        .modal-label { font-size: 12px; color: #7f8c8d; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+        .modal-value { font-size: 16px; color: var(--dark); font-weight: 600; }
+        .modal-link { display: inline-block; color: var(--primary); text-decoration: none; cursor: pointer; font-weight: 600; }
+        .modal-link:hover { color: var(--secondary); }
+        .motivational-quote {
+            margin-top: auto;
+            padding-top: 30px;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            font-size: 14px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loading { color: #667eea; }
+        @media (max-width: 768px) {
+            .top-bar { padding: 12px 15px; }
+            .screenshot-btn { padding: 6px 12px; font-size: 12px; }
+            .user-info { display: none; }
+            .content { padding: 15px; }
+            .page-header h1 { font-size: 20px; }
+            .filter-container { flex-direction: column; }
+            .filter-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <button class="toggle-sidebar" onclick="toggleSidebar()">◀</button>
+            <div class="logo">
+                <i class="fas fa-train"></i>
+                <span>VLT Carioca</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showPage('dashboard')">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="nav-label">Dashboard</span>
+                </li>
+                <li class="nav-item" onclick="showPage('passagem')">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span class="nav-label">Passagem de Serviço</span>
+                </li>
+                <li class="nav-item" onclick="showPage('novo_registro')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span class="nav-label">Novo Registro</span>
+                </li>
+                <li class="nav-item" onclick="showPage('relatorios')" id="relatorios-menu">
+                    <i class="fas fa-table"></i>
+                    <span class="nav-label">Relatórios</span>
+                </li>
+                <li class="nav-item" onclick="showPage('usuarios')" id="usuarios-menu">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-label">Usuários</span>
+                </li>
+            </ul>
+            <div class="nav-divider"></div>
+            <ul class="nav-menu">
+                <li class="nav-item" onclick="openSupportModal()">
+                    <i class="fas fa-headset"></i>
+                    <span class="nav-label">Suporte</span>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main">
+            <div class="top-bar">
+                <div class="breadcrumb" id="breadcrumb">📊 Dashboard</div>
+                <div class="top-right">
+                    <button class="screenshot-btn" onclick="takeScreenshot()">
+                        <i class="fas fa-camera"></i> Screenshot
+                    </button>
+                    <div class="user-profile" onclick="openProfileModal()">
+                        <div class="user-avatar" id="userInitials">GJ</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">Carregando...</div>
+                            <div class="user-role" id="userRole">...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="pages-wrapper">
+                    <!-- Dashboard -->
+                    <div class="page active" id="page-dashboard">
+                        <div class="page-header">
+                            <h1>📈 Dashboard Analítico</h1>
+                            <p>Visão geral dos indicadores em tempo real</p>
+                        </div>
+                        <div class="cards-container" id="dashboard-cards">
+                            <!-- Cards serão inseridos aqui pelo JS -->
+                        </div>
+                        <div style="width: 100%; height: 600px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; position: relative;">
+                            <div class="loading-overlay" id="loading-looker">
+                                <div class="spinner"></div>
+                            </div>
+                            <iframe src="https://lookerstudio.google.com/embed/reporting/95cf4b2a-b4ef-4aa1-910c-423461799e6c" frameborder="0" style="border: 0; width: 100%; height: 100%;" onload="document.getElementById('loading-looker').classList.add('hidden')" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                        </div>
+                    </div>
+
+                    <!-- Passagem de Serviço -->
+                    <div class="page" id="page-passagem">
+                        <div class="page-header">
+                            <h1>📋 Passagem de Serviço</h1>
+                            <p>Resumo do último plantão (últimas 12 horas)</p>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data/Hora</th>
+                                        <th>Técnico</th>
+                                        <th>Trem</th>
+                                        <th>Sistema</th>
+                                        <th>Descrição</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="passagem-table">
+                                    <tr><td colspan="6" style="text-align: center; padding: 40px;" class="loading">⏳ Carregando dados...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Novo Registro -->
+                    <div class="page" id="page-novo_registro">
+                        <div class="page-header">
+                            <h1>➕ Novo Registro</h1>
+                            <p>Registre uma nova falha ou evento no sistema</p>
+                        </div>
+                        <div class="center-content">
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?usp=dialog" target="_blank" class="btn-primary">
+                                <i class="fas fa-external-link-alt"></i> Abrir Formulário de Novo Registro
+                            </a>
+                            <p style="margin-top: 30px; color: #7f8c8d; font-size: 14px;">
+                                Ao preencher e enviar o formulário, os dados serão adicionados automaticamente à planilha central e refletidos no sistema.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Relatórios -->
+                    <div class="page" id="page-relatorios">
+                        <div class="page-header">
+                            <h1>📊 Relatórios de Falhas</h1>
+                            <p>Filtre e exporte os dados conforme sua necessidade</p>
+                        </div>
+                        <div class="filter-container">
+                            <input type="date" id="filterDataInicio" class="filter-input">
+                            <input type="date" id="filterDataFim" class="filter-input">
+                            <input type="text" id="filterTrem" class="filter-input" placeholder="Número do Trem (ex: VLT 101)">
+                            <input type="text" id="filterSistema" class="filter-input" placeholder="Sistema (ex: Tração)">
+                            <button class="filter-btn" onclick="applyFilters()">
+                                <i class="fas fa-filter"></i> Aplicar Filtros
+                            </button>
+                            <button class="filter-btn" onclick="clearFilters()">
+                                <i class="fas fa-times"></i> Limpar
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Técnico</th>
+                                        <th>Trem</th>
+                                        <th>Sistema</th>
+                                        <th>IOS</th>
+                                        <th>Descrição</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="relatorio-table">
+                                    <tr><td colspan="7" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para gerar o relatório</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="download-buttons" id="download-buttons" style="display: none; gap: 10px; margin-top: 20px;">
+                            <button class="btn-primary" onclick="downloadCSV()">
+                                <i class="fas fa-file-excel"></i> Download Excel (CSV)
+                            </button>
+                            <button class="btn-primary" onclick="downloadPDF()">
+                                <i class="fas fa-file-pdf"></i> Download PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Usuários -->
+                    <div class="page" id="page-usuarios">
+                        <div class="page-header">
+                            <h1>👥 Usuários do Sistema</h1>
+                            <p>Lista de usuários cadastrados e seus perfis</p>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Usuário</th>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                        <th>Telefone</th>
+                                        <th>Tipo</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usuarios-table">
+                                    <tr><td colspan="6" style="text-align: center; padding: 40px;" class="loading">⏳ Carregando usuários...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="motivational-quote" id="motivational-quote">
+                    💪 Excelência é a jornada, não o destino!
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Perfil -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProfileModal()">✕</button>
+            <div class="modal-title">👤 Meu Perfil</div>
+            
+            <div class="modal-section">
+                <div class="modal-label">Nome Completo</div>
+                <div class="modal-value" id="perfil-nome">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Usuário</div>
+                <div class="modal-value" id="perfil-usuario">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Email</div>
+                <div class="modal-value" id="perfil-email">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Telefone / WhatsApp</div>
+                <div class="modal-value" id="perfil-telefone">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Endereço</div>
+                <div class="modal-value" id="perfil-endereco">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Matrícula</div>
+                <div class="modal-value" id="perfil-matricula">-</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Tipo de Acesso</div>
+                <div class="modal-value" id="perfil-tipo">-</div>
+            </div>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);">
+                <button style="width: 100%; padding: 12px; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sair do Sistema
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Suporte -->
+    <div id="supportModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSupportModal()">✕</button>
+            <div class="modal-title">📞 Suporte Técnico</div>
+            
+            <div class="modal-section">
+                <div class="modal-label">Gerente de Manutenção</div>
+                <div class="modal-value">Guilherme Juraci</div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Email</div>
+                <div class="modal-value">
+                    <a href="mailto:guilherme.fernandes@motiva.com.br" class="modal-link">
+                        📧 guilherme.fernandes@motiva.com.br
+                    </a>
+                </div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">WhatsApp</div>
+                <div class="modal-value">
+                    <a href="https://wa.me/5521970363062" target="_blank" class="modal-link">
+                        💬 Clique para conversar no WhatsApp
+                    </a>
+                </div>
+            </div>
+            <div style="background: #f0f7ff; padding: 15px; border-radius: 5px; border-left: 4px solid var(--primary); margin-top: 20px; font-size: 14px; color: var(--dark); line-height: 1.6;">
+                <strong>Precisa de ajuda?</strong><br>
+                Estou aqui para suportar você! Entre em contato via email ou WhatsApp. 🙌
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const motivationalQuotes = [
+            "💪 Excelência é a jornada, não o destino!", "🚆 Segurança em primeiro lugar, sempre!", "🛡️ Proteção é responsabilidade de todos!",
+            "⚡ Somos o coração ferroviário do Rio!", "🎯 Precisão e dedicação em cada operação!", "👥 Juntos fazemos a diferença!",
+            "🌟 VLT Carioca: Mobilidade com segurança!", "✅ Qualidade: nosso compromisso!", "🚀 Inovação todos os dias!",
+            "❤️ Paixão pelo que fazemos!", "🏆 Somos os melhores ferroviários!", "🔧 Manutenção impecável, sempre!",
+            "⭐ Faça sua parte, sempre com cuidado!", "💯 100% de comprometimento!", "🎖️ Orgulho de servir a população!",
+            "🚇 Conectando vidas, cidades e sonhos!", "🛡️ Cada detalhe conta para a segurança!", "👨‍🔧 Profissionalismo em tudo!",
+            "🌉 VLT: Liderança em mobilidade urbana!", "💡 Ideias para melhorar a cada dia!"
+        ];
+
+        const REGISTRO_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1131259241&single=true&output=csv';
+        const USUARIOS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1605075317&single=true&output=csv';
+
+        let currentUser = null;
+        let allRegistros = [];
+        let filteredReportData = [];
+
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length === 0) return [];
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const rows = [];
+            for (let i = 1; i < lines.length; i++) {
+                const obj = {};
+                const values = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+                headers.forEach((h, idx) => {
+                    obj[h] = values[idx] ? values[idx].trim().replace(/"/g, '') : '';
+                });
+                rows.push(obj);
+            }
+            return rows;
+        }
+
+        function checkAuth() {
+            const userData = sessionStorage.getItem('vlt_user');
+            if (!userData) {
+                window.location.href = 'index.html';
+                return null;
+            }
+            return JSON.parse(userData);
+        }
+
+        currentUser = checkAuth();
+
+        if (currentUser) {
+            const usuario = currentUser.usuario;
+            document.getElementById('userName').textContent = usuario;
+            document.getElementById('userRole').textContent = currentUser.tipo;
+            const initials = usuario.split('.').map(n => n[0].toUpperCase()).join('');
+            document.getElementById('userInitials').textContent = initials;
+
+            if (currentUser.tipo !== 'ADMIN') {
+                document.getElementById('relatorios-menu').style.display = 'none';
+                document.getElementById('usuarios-menu').style.display = 'none';
+            }
+            loadUserProfile(usuario);
+        }
+
+        function loadUserProfile(usuario) {
+            fetch(USUARIOS_CSV)
+                .then(r => r.text())
+                .then(csv => {
+                    const rows = parseCSV(csv);
+                    const userRow = rows.find(r => r.Usuario === usuario);
+                    if (userRow) {
+                        const telefone = userRow.Telefone ? userRow.Telefone.replace(/\D/g, '') : '';
+                        const whatsappLink = telefone ? `<a href="https://wa.me/55${telefone}" target="_blank" class="modal-link"><i class="fab fa-whatsapp"></i> Clique para conversar</a>` : 'Não informado';
+                        
+                        document.getElementById('perfil-nome').textContent = userRow.Nome_Completo || '-';
+                        document.getElementById('perfil-usuario').textContent = userRow.Usuario || '-';
+                        document.getElementById('perfil-email').textContent = userRow.Email || '-';
+                        document.getElementById('perfil-telefone').innerHTML = whatsappLink;
+                        document.getElementById('perfil-endereco').textContent = userRow.Endereco || '-';
+                        document.getElementById('perfil-matricula').textContent = userRow.Matrícula || '-';
+                        document.getElementById('perfil-tipo').textContent = userRow.Tipo || '-';
+                    }
+                })
+                .catch(e => console.error('Erro ao carregar perfil:', e));
+        }
+
+        function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('collapsed'); }
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            
+            document.getElementById('page-' + pageName).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+
+            const titles = { 'dashboard': '📊 Dashboard', 'passagem': '📋 Passagem de Serviço', 'novo_registro': '➕ Novo Registro', 'relatorios': '📊 Relatórios', 'usuarios': '👥 Usuários' };
+            document.getElementById('breadcrumb').textContent = titles[pageName] || pageName;
+            updateMotivationalQuote();
+
+            if (pageName === 'dashboard') loadDashboardCards();
+            if (pageName === 'passagem') loadPassagemData();
+            if (pageName === 'usuarios') loadUsuarios();
+        }
+
+        function loadDashboardCards() {
+            if (allRegistros.length === 0) {
+                fetch(REGISTRO_CSV).then(r => r.text()).then(csv => { allRegistros = parseCSV(csv); renderCards(); }).catch(console.error);
+            } else {
+                renderCards();
+            }
+        }
+        function renderCards() {
+            const counts = { manutencao: 0, liberado: 0, agendado: 0, total: allRegistros.length };
+            allRegistros.forEach(r => {
+                const status = (r['STATUS ATUAL DO TREM'] || '').toLowerCase();
+                if (status.includes('manuten')) counts.manutencao++;
+                else if (status.includes('liberad')) counts.liberado++;
+                else if (status.includes('agendad')) counts.agendado++;
+            });
+            const cardsHtml = `
+                <div class="card card-total"><div class="card-icon"><i class="fas fa-list"></i></div><div class="card-info"><h3>${counts.total}</h3><p>Total de Registros</p></div></div>
+                <div class="card card-manutencao"><div class="card-icon"><i class="fas fa-tools"></i></div><div class="card-info"><h3>${counts.manutencao}</h3><p>Em Manutenção</p></div></div>
+                <div class="card card-liberado"><div class="card-icon"><i class="fas fa-check-circle"></i></div><div class="card-info"><h3>${counts.liberado}</h3><p>Liberados</p></div></div>
+                <div class="card card-agendado"><div class="card-icon"><i class="fas fa-calendar-check"></i></div><div class="card-info"><h3>${counts.agendado}</h3><p>Agendados</p></div></div>
+            `;
+            document.getElementById('dashboard-cards').innerHTML = cardsHtml;
+        }
+
+        function loadPassagemData() {
+            fetch(REGISTRO_CSV).then(r => r.text()).then(csv => {
+                const rows = parseCSV(csv);
+                const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
+                const recentRows = rows.filter(r => {
+                    try { return new Date(r['Carimbo de data/hora']) >= twelveHoursAgo; } catch { return false; }
+                }).reverse();
+                
+                const table = document.getElementById('passagem-table');
+                if (recentRows.length === 0) {
+                    table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum registro nas últimas 12 horas.</td></tr>';
+                } else {
+                    table.innerHTML = recentRows.map(r => `
+                        <tr>
+                            <td>${r['Carimbo de data/hora']}</td>
+                            <td>${r['NOME']}</td>
+                            <td>${r['NMERO DO TREM:']}</td>
+                            <td>${r['SISTEMA']}</td>
+                            <td>${r['DESCRIO DETALHADA']}</td>
+                            <td><span class="status-badge status-${(r['STATUS ATUAL DO TREM'] || 'liberado').normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase()}">${r['STATUS ATUAL DO TREM']}</span></td>
+                        </tr>
+                    `).join('');
+                }
+            }).catch(e => {
+                console.error('Erro:', e);
+                document.getElementById('passagem-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Erro ao carregar dados.</td></tr>';
+            });
+        }
+
+        function loadUsuarios() {
+            fetch(USUARIOS_CSV).then(r => r.text()).then(csv => {
+                const rows = parseCSV(csv);
+                const table = document.getElementById('usuarios-table');
+                table.innerHTML = rows.map(r => `
+                    <tr>
+                        <td>${r.Usuario}</td>
+                        <td>${r.Nome_Completo}</td>
+                        <td>${r.Email}</td>
+                        <td>${r.Telefone}</td>
+                        <td><span style="padding:4px 12px;border-radius:12px;background:rgba(102,126,234,0.1);color:#667eea;font-size:12px;font-weight:600;">${r.Tipo}</span></td>
+                        <td><span style="padding:4px 12px;border-radius:12px;background:#e8f8f5;color:#27ae60;font-size:12px;font-weight:600;">${r.Ativo}</span></td>
+                    </tr>
+                `).join('');
+            }).catch(e => {
+                console.error('Erro:', e);
+                document.getElementById('usuarios-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Erro ao carregar usuários.</td></tr>';
+            });
+        }
+
+        function applyFilters() {
+            if (allRegistros.length === 0) {
+                fetch(REGISTRO_CSV).then(r => r.text()).then(csv => { allRegistros = parseCSV(csv); processFilters(); }).catch(console.error);
+            } else {
+                processFilters();
+            }
+        }
+
+        function processFilters() {
+            const dataInicio = document.getElementById('filterDataInicio').value;
+            const dataFim = document.getElementById('filterDataFim').value;
+            const trem = document.getElementById('filterTrem').value.toLowerCase();
+            const sistema = document.getElementById('filterSistema').value.toLowerCase();
+
+            filteredReportData = allRegistros.filter(r => {
+                try {
+                    const dataRegistro = new Date(r['Carimbo de data/hora']);
+                    if (dataInicio && dataRegistro < new Date(dataInicio)) return false;
+                    if (dataFim && dataRegistro > new Date(dataFim + 'T23:59:59')) return false;
+                    if (trem && !r['NMERO DO TREM:'].toLowerCase().includes(trem)) return false;
+                    if (sistema && !r['SISTEMA'].toLowerCase().includes(sistema)) return false;
+                    return true;
+                } catch { return false; }
+            });
+
+            renderReportTable();
+        }
+
+        function renderReportTable() {
+            const table = document.getElementById('relatorio-table');
+            if (filteredReportData.length === 0) {
+                table.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
+                document.getElementById('download-buttons').style.display = 'none';
+            } else {
+                table.innerHTML = filteredReportData.map(r => `
+                    <tr>
+                        <td>${r['Carimbo de data/hora']}</td>
+                        <td>${r['NOME']}</td>
+                        <td>${r['NMERO DO TREM:']}</td>
+                        <td>${r['SISTEMA']}</td>
+                        <td>${r['CDIGO IOS DA FALHA']}</td>
+                        <td>${r['DESCRIO DETALHADA']}</td>
+                        <td><span class="status-badge status-${(r['STATUS ATUAL DO TREM'] || 'liberado').normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase()}">${r['STATUS ATUAL DO TREM']}</span></td>
+                    </tr>
+                `).join('');
+                document.getElementById('download-buttons').style.display = 'flex';
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('filterDataInicio').value = '';
+            document.getElementById('filterDataFim').value = '';
+            document.getElementById('filterTrem').value = '';
+            document.getElementById('filterSistema').value = '';
+            filteredReportData = [];
+            document.getElementById('relatorio-table').innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para gerar o relatório</td></tr>';
+            document.getElementById('download-buttons').style.display = 'none';
+        }
+
+        function downloadCSV() {
+            if (filteredReportData.length === 0) { alert('Nenhum dado para exportar.'); return; }
+            const ws = XLSX.utils.json_to_sheet(filteredReportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Relatorio');
+            XLSX.writeFile(wb, 'VLT_Relatorio_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+        }
+
+        function downloadPDF() {
+            if (filteredReportData.length === 0) { alert('Nenhum dado para exportar.'); return; }
+            const element = document.getElementById('relatorio-table');
+            const opt = { margin: 10, filename: 'VLT_Relatorio.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' } };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function takeScreenshot() {
+            const element = document.querySelector('.pages-wrapper');
+            html2canvas(element, { allowTaint: true, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'VLT_Screenshot_' + new Date().toLocaleString('pt-BR').replace(/[/\\:]/g, '-') + '.png';
+                link.click();
+            });
+        }
+
+        function openProfileModal() { document.getElementById('profileModal').classList.add('show'); }
+        function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
+        function openSupportModal() { document.getElementById('supportModal').classList.add('show'); }
+        function closeSupportModal() { document.getElementById('supportModal').classList.remove('show'); }
+
+        function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+        function updateMotivationalQuote() {
+            const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+            document.getElementById('motivational-quote').textContent = quote;
+        }
+
+        // Event Listeners
+        document.getElementById('profileModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeProfileModal(); });
+        document.getElementById('supportModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeSupportModal(); });
+
+        // Initial load
+        updateMotivationalQuote();
+        loadDashboardCards();
+    </script>
+</body>
+</html>
