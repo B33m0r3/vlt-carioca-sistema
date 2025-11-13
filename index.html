@@ -1,321 +1,273 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VLT Carioca - Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .login-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            display: flex;
-            max-width: 900px;
-            width: 100%;
-            overflow: hidden;
-        }
-        .login-left {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 60px 40px;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-width: 40%;
-        }
-        .login-icon { font-size: 80px; margin-bottom: 30px; }
-        .login-left h1 { font-size: 32px; margin-bottom: 20px; text-align: center; }
-        .login-left p { font-size: 16px; text-align: center; opacity: 0.9; }
-        .login-right {
-            padding: 60px 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-width: 60%;
-        }
-        .login-right h2 { font-size: 28px; margin-bottom: 10px; color: #333; }
-        .login-right > p { color: #999; margin-bottom: 30px; font-size: 14px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; }
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border 0.3s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-        }
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: transform 0.2s;
-        }
-        .login-btn:hover { transform: translateY(-2px); }
-        .login-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-        .error-message {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
-            padding: 10px;
-            background: #fadbd8;
-            border-radius: 5px;
-        }
-        .success-message {
-            color: #27ae60;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
-            padding: 10px;
-            background: #d5f4e6;
-            border-radius: 5px;
-        }
-        .help-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .help-btn {
-            background: none;
-            border: none;
-            color: #667eea;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: underline;
-            font-size: 14px;
-        }
-        .help-btn:hover { color: #764ba2; }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal.show { display: flex; }
-        .modal-content {
-            background: white;
-            border-radius: 10px;
-            padding: 40px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            position: relative;
-        }
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            color: #999;
-        }
-        .modal-close:hover { color: #333; }
-        .modal-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 30px;
-            color: #2c3e50;
-        }
-        .modal-info {
-            margin-bottom: 20px;
-        }
-        .modal-label {
-            font-size: 12px;
-            color: #7f8c8d;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-        .modal-value {
-            font-size: 16px;
-            color: #2c3e50;
-            font-weight: 600;
-        }
-        .modal-link {
-            display: inline-block;
-            color: #667eea;
-            text-decoration: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .modal-link:hover { color: #764ba2; }
-        .modal-message {
-            background: #f0f7ff;
-            padding: 15px;
-            border-radius: 5px;
-            border-left: 4px solid #667eea;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #2c3e50;
-            line-height: 1.6;
-        }
-        @media (max-width: 768px) {
-            .login-container { flex-direction: column; }
-            .login-left { min-width: 100%; padding: 40px 20px; }
-            .login-right { min-width: 100%; padding: 40px 20px; }
-            .modal-content { width: 95%; padding: 30px 20px; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VLT Carioca - Sistema de Gerenciamento</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      padding: 45px 35px;
+      text-align: center;
+    }
+
+    .logo { font-size: 48px; margin-bottom: 15px; }
+
+    h1 { color: #00a651; margin-bottom: 8px; font-size: 28px; font-weight: 700; }
+    .subtitle { color: #999; margin-bottom: 30px; font-size: 13px; }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+      border-left: 4px solid #721c24;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #555;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #00a651;
+      box-shadow: 0 0 0 3px rgba(0, 166, 81, 0.1);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .footer-login {
+      margin-top: 25px;
+      text-align: center;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+
+    .btn-ajuda {
+      background: none;
+      color: #667eea;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .btn-ajuda:hover { color: #764ba2; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s;
+    }
+
+    @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .close-modal {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-modal:hover { color: #000; }
+
+    .modal h2 { color: #00a651; margin-bottom: 20px; }
+
+    .modal p {
+      margin: 12px 0;
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .modal a {
+      color: #00a651;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .modal a:hover { text-decoration: underline; }
+
+    .loading {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-left">
-            <div class="login-icon"><i class="fas fa-train"></i></div>
-            <h1>VLT Carioca</h1>
-            <p>Sistema de Gestão de Falhas e Manutenção</p>
-        </div>
-        <div class="login-right">
-            <h2>Acesso ao Sistema</h2>
-            <p>Digite suas credenciais de acesso</p>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username"><i class="fas fa-user"></i> Usuário</label>
-                    <input type="text" id="username" placeholder="Digite seu usuário" required>
-                </div>
-                <div class="form-group">
-                    <label for="password"><i class="fas fa-lock"></i> Senha</label>
-                    <input type="password" id="password" placeholder="Digite sua senha" required>
-                </div>
-                <button type="submit" class="login-btn" id="loginBtn">
-                    <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
-                </button>
-                <div id="errorMessage" class="error-message"></div>
-                <div id="successMessage" class="success-message"></div>
-            </form>
-            <div class="help-link">
-                <button class="help-btn" onclick="openHelpModal()">❓ Problemas ao acessar?</button>
-            </div>
-        </div>
+  <div class="login-container" id="loginContainer">
+    <div class="logo">🚂</div>
+    <h1>VLT Carioca</h1>
+    <p class="subtitle">Sistema de Gerenciamento de Passagem de Serviço</p>
+    
+    <div class="error" id="errorMessage"></div>
+    
+    <form onsubmit="fazerLogin(event)">
+      <div class="form-group">
+        <label for="usuario">Usuário</label>
+        <input type="text" id="usuario" placeholder="Digite seu usuário" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" placeholder="Digite sua senha" required>
+      </div>
+      
+      <button type="submit" class="btn-login">Entrar</button>
+    </form>
+
+    <div class="footer-login">
+      <button class="btn-ajuda" onclick="abrirAjuda()">Precisa de ajuda?</button>
     </div>
+  </div>
 
-    <div id="helpModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeHelpModal()">✕</button>
-            <div class="modal-title">📞 Suporte</div>
-            
-            <div class="modal-info">
-                <div class="modal-label">Gerente de Suporte</div>
-                <div class="modal-value">Guilherme Juraci</div>
-            </div>
-
-            <div class="modal-info">
-                <div class="modal-label">Email</div>
-                <div class="modal-value">
-                    <a href="mailto:guilherme.fernandes@motiva.com.br" class="modal-link">
-                        📧 guilherme.fernandes@motiva.com.br
-                    </a>
-                </div>
-            </div>
-
-            <div class="modal-info">
-                <div class="modal-label">WhatsApp</div>
-                <div class="modal-value">
-                    <a href="https://wa.me/5521987654321" class="modal-link" target="_blank">
-                        💬 (21) 98765-4321
-                    </a>
-                </div>
-            </div>
-
-            <div class="modal-message">
-                <strong>Não consegue acessar o sistema?</strong><br>
-                Entre em contato via email ou WhatsApp. Estou aqui para ajudar! 🙌
-            </div>
-        </div>
+  <div id="modalAjuda" class="modal" onclick="fecharAjuda(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <span class="close-modal" onclick="fecharAjuda()">&times;</span>
+      <h2>Suporte</h2>
+      <p>Em caso de dúvidas ou problemas para acessar o sistema:</p>
+      <p><strong>Entre em contato:</strong></p>
+      <p><strong>Guilherme Juraci</strong></p>
+      <p>📧 <a href="mailto:guilherme.fernandes@motiva.com.br">guilherme.fernandes@motiva.com.br</a></p>
+      <p>💬 <a href="https://wa.me/5521987654321" target="_blank">WhatsApp</a></p>
+      <p style="margin-top: 20px; font-size: 12px; color: #999;">Resposta em até 2 horas.</p>
     </div>
+  </div>
 
-    <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3x9_f_s7kLwKHrgTPUSaqjVmZfzrEo-plnm0oy1UdaQSzrNou2bjpIZTItJRJCrgkgQ/exec';
+  <script>
+    const URLAPPSSCRIPT = "https://script.google.com/macros/d/AKfycbz3x9fs7kLwKHrgTPUSaqjVmZfzrEo-plnm0oy1UdaQSzrNou2bjpIZTItJRJCrgkgQexec";
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const errorMsg = document.getElementById('errorMessage');
-            const successMsg = document.getElementById('successMessage');
+    function fazerLogin(event) {
+      event.preventDefault();
+      const usuario = document.getElementById('usuario').value;
+      const senha = document.getElementById('senha').value;
+      const url = URLAPPSSCRIPT + "?acao=verificarlogin&usuario=" + encodeURIComponent(usuario) + "&senha=" + encodeURIComponent(senha);
 
-            errorMsg.style.display = 'none';
-            successMsg.style.display = 'none';
-            loginBtn.disabled = true;
-            loginBtn.textContent = '⏳ Verificando...';
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "sucesso") {
+            localStorage.setItem('usuario', usuario);
+            localStorage.setItem('tipo', data.tipo);
+            localStorage.setItem('nome_completo', data.nome_completo || usuario);
+            localStorage.setItem('email', data.email || '');
+            localStorage.setItem('telefone', data.telefone || '');
+            window.location.href = 'dashboard.html';
+          } else {
+            mostrarErro("Usuário ou senha inválidos!");
+          }
+        })
+        .catch(error => mostrarErro("Erro de conexão: " + error.message));
+    }
 
-            fetch(`${APPS_SCRIPT_URL}?acao=verificar_login&usuario=${encodeURIComponent(username)}&senha=${encodeURIComponent(password)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'sucesso') {
-                        sessionStorage.setItem('user', JSON.stringify({
-                            usuario: data.usuario,
-                            tipo: data.tipo,
-                            loginTime: new Date().toLocaleString('pt-BR')
-                        }));
-                        
-                        successMsg.textContent = '✅ ' + data.mensagem;
-                        successMsg.style.display = 'block';
-                        
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1000);
-                    } else {
-                        errorMsg.textContent = '❌ ' + data.mensagem;
-                        errorMsg.style.display = 'block';
-                        loginBtn.disabled = false;
-                        loginBtn.textContent = '🔓 Entrar no Sistema';
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    errorMsg.textContent = '❌ Erro ao conectar. Tente novamente.';
-                    errorMsg.style.display = 'block';
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = '🔓 Entrar no Sistema';
-                });
-        });
+    function mostrarErro(msg) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+      setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+    }
 
-        function openHelpModal() {
-            document.getElementById('helpModal').classList.add('show');
-        }
+    function abrirAjuda() {
+      document.getElementById('modalAjuda').style.display = 'block';
+    }
 
-        function closeHelpModal() {
-            document.getElementById('helpModal').classList.remove('show');
-        }
+    function fecharAjuda(event) {
+      if (!event || event.target.id === 'modalAjuda') {
+        document.getElementById('modalAjuda').style.display = 'none';
+      }
+    }
 
-        document.getElementById('helpModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeHelpModal();
-            }
-        });
-    </script>
+    window.addEventListener('load', () => {
+      const usuarioSalvo = localStorage.getItem('usuario');
+      if (usuarioSalvo) {
+        window.location.href = 'dashboard.html';
+      }
+    });
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('modalAjuda');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>
