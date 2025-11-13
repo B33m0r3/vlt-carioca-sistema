@@ -1,60 +1,69 @@
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-    }
-
-    .login-container {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        display: flex;
-        max-width: 900px;
-        width: 100%;
-        overflow: hidden;
-    }
-
-    .login-left {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 60px 40px;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-width: 40%;
-    }
-
-    .login-left h1 {
-        font-size: 32px;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .login-left p {
-        font-size: 16px;
-        text-align: center;
-        opacity: 0.9;
-        line-height: 1.6;
-    }
-
-    .login-icon {
-        font-size: 80px;
-        margin-bottom: 30px;
-        opacity: 0.9;
-    }
-
-    .login-right {
-        padding: 60px 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        min-width: 60%;
-    }
-
-    .login-right h2 {
-        font-size: 28px
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLT Carioca - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .login-container { background: white; border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: flex; max-width: 900px; width: 100%; }
+        .login-left { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 40px; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .login-icon { font-size: 80px; margin-bottom: 30px; }
+        .login-left h1 { font-size: 32px; margin-bottom: 20px; text-align: center; }
+        .login-left p { font-size: 16px; text-align: center; opacity: 0.9; }
+        .login-right { padding: 60px 40px; display: flex; flex-direction: column; justify-content: center; }
+        .login-right h2 { font-size: 28px; margin-bottom: 10px; color: #333; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; }
+        .form-group input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 14px; }
+        .form-group input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .login-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .demo-info { background: #e8f4f8; border-left: 4px solid #3498db; padding: 15px; border-radius: 5px; margin-bottom: 20px; font-size: 13px; }
+        .error-message { color: #e74c3c; display: none; padding: 10px; background: #fadbd8; border-radius: 5px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-left">
+            <div class="login-icon"><i class="fas fa-train"></i></div>
+            <h1>VLT Carioca</h1>
+            <p>Sistema de Gestão</p>
+        </div>
+        <div class="login-right">
+            <h2>Acesso</h2>
+            <div class="demo-info"><strong>Demo:</strong><br>Usuário: Guilherme Juraci<br>Senha: @Rodant3</div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Usuário</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="login-btn">Entrar</button>
+                <div id="errorMessage" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const users = [
+                {u: 'Guilherme Juraci', p: '@Rodant3'},
+                {u: 'Admin', p: 'admin123'}
+            ];
+            const user = users.find(x => x.u === document.getElementById('username').value && x.p === document.getElementById('password').value);
+            if (user) {
+                sessionStorage.setItem('user', JSON.stringify({name: document.getElementById('username').value}));
+                window.location.href = 'dashboard.html';
+            } else {
+                document.getElementById('errorMessage').textContent = 'Usuário ou senha incorretos!';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
