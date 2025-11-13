@@ -2,42 +2,58 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard VLT Carioca</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - VLT Carioca</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { margin:0; font-family:Segoe UI, sans-serif; background:#f5f7fa; }
-    .top-bar { background:white; padding:15px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; }
-    .breadcrumb { font-size:14px; color:#555; }
-    .content { padding:20px; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; }
+    .container {
+      background: white; padding: 20px;
+      border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 600px;
+      margin: 40px auto; min-height: 300px;
+    }
+    h1 { color: #667eea; }
+    .user-info {
+      background: #f0f0f0; padding: 15px; border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #e74c3c; color: white; padding: 10px 20px; border: none;
+      border-radius: 5px; cursor: pointer;
+    }
+    button:hover { background: #c0392b; }
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <div class="breadcrumb">📊 Dashboard</div>
-    <div id="userInfo"></div>
+  <div class="container">
+    <h1>Dashboard - VLT Carioca</h1>
+    <div class="user-info">
+      <h2>Bem-vindo, <span id="nomeUsuario">usuário</span>!</h2>
+      <p>Tipo de acesso: <strong id="tipoUsuario">-</strong></p>
+    </div>
+    <h3>Seções do Dashboard</h3>
+    <ul>
+      <li>Relatórios</li>
+      <li>Gráficos</li>
+      <li>Usuários</li>
+    </ul>
+    <br>
+    <button onclick="logout()">Sair</button>
   </div>
-
-  <div class="content">
-    <h1>Bem-vindo ao Dashboard</h1>
-    <p>Gráficos e indicadores em tempo real.</p>
-    <iframe src="https://lookerstudio.google.com/embed/reporting/95cf4b2a-b4ef-4aa1-910c-423461799e6c"
-            frameborder="0" style="border:0;width:100%;height:600px;" allowfullscreen></iframe>
-  </div>
-
   <script>
-    function checkAuth() {
-      const user = sessionStorage.getItem('user');
-      if (!user) {
-        alert("Você precisa fazer login!");
-        window.location.href = "index.html"; // volta para login apenas uma vez
-        return null;
-      }
-      return JSON.parse(user);
+    // Pegar dados do usuário do localStorage
+    const usuario = localStorage.getItem('usuario');
+    const tipo = localStorage.getItem('tipo');
+    if (!usuario) {
+      // Se não tiver usuário, volta para o login
+      window.location.href = 'index.html';
+    } else {
+      document.getElementById('nomeUsuario').textContent = usuario;
+      document.getElementById('tipoUsuario').textContent = tipo;
     }
-
-    const currentUser = checkAuth();
-    if (currentUser) {
-      document.getElementById("userInfo").textContent = currentUser.usuario + " (" + currentUser.tipo + ")";
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'index.html';
     }
   </script>
 </body>
