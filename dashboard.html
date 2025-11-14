@@ -419,11 +419,14 @@
                             <a href="https://docs.google.com/spreadsheets/d/13G8eUT2m35aoWsqpIu3OTKUdg0L2sdjEl0GTXfPEg50/edit?usp=sharing" target="_blank" class="btn-primary" style="margin-left: 10px;">
                                 <i class="fas fa-table"></i> Acessar Planilha
                             </a>
+                            <!-- BOTÃO NOVO DE PRINT -->
+                            <button class="btn-primary" onclick="takePassagemScreenshot()" style="margin-left: 10px;">
+                                <i class="fas fa-camera"></i> Capturar Tela
+                            </button>
                         </div>
-                        <!-- Filtros para Passagem de Serviço -->
+                        <!-- Filtros para Passagem de Serviço - APENAS 1 DATA AGORA -->
                         <div class="filter-container" id="passagem-filters" style="display: none;">
-                            <input type="date" id="passagemDataInicio" class="filter-input">
-                            <input type="date" id="passagemDataFim" class="filter-input">
+                            <input type="date" id="passagemData" class="filter-input" placeholder="Selecione a data">
                             <select id="passagemGrupo" class="filter-select">
                                 <option value="">Todos Grupos</option>
                                 <option value="GRUPO A">GRUPO A</option>
@@ -722,83 +725,54 @@
         let filteredReportData = [];
         let filteredPassagemData = [];
 
-function parseCSV(csvText) {
-    const lines = csvText.trim().split('\n');
-    if (lines.length === 0) return [];
-    
-    // Processa o cabeçalho corretamente
-    const headers = parseCSVLine(lines[0]);
-    
-    const rows = [];
-    for (let i = 1; i < lines.length; i++) {
-        if (lines[i].trim() === '') continue;
-        
-        const values = parseCSVLine(lines[i]);
-        const obj = {};
-        
-        headers.forEach((header, idx) => {
-            // Limpa o cabeçalho removendo aspas e espaços extras
-            const cleanHeader = header.trim().replace(/"/g, '');
-            obj[cleanHeader] = values[idx] ? values[idx].trim().replace(/"/g, '') : '';
-        });
-        
-        rows.push(obj);
-    }
-    return rows;
-}
-
-// Nova função auxiliar para parse correto de linhas CSV
-function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-    
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            result.push(current);
-            current = '';
-        } else {
-            current += char;
+        // FUNÇÃO PARSE CSV CORRIGIDA
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length === 0) return [];
+            
+            // Processa o cabeçalho corretamente
+            const headers = parseCSVLine(lines[0]);
+            
+            const rows = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim() === '') continue;
+                
+                const values = parseCSVLine(lines[i]);
+                const obj = {};
+                
+                headers.forEach((header, idx) => {
+                    // Limpa o cabeçalho removendo aspas e espaços extras
+                    const cleanHeader = header.trim().replace(/"/g, '');
+                    obj[cleanHeader] = values[idx] ? values[idx].trim().replace(/"/g, '') : '';
+                });
+                
+                rows.push(obj);
+            }
+            return rows;
         }
-    }
-    
-    result.push(current);
-    return result;
-}
-        function debugData(rows) {
-    console.log('=== DEBUG DOS DADOS ===');
-    console.log('Total de registros:', rows.length);
-    if (rows.length > 0) {
-        console.log('Colunas disponíveis:', Object.keys(rows[0]));
-        console.log('Primeiro registro:', rows[0]);
-        
-        // Verifica se a coluna de status existe
-        const firstRow = rows[0];
-        const statusKey = Object.keys(firstRow).find(key => 
-            key.toLowerCase().includes('status')
-        );
-        console.log('Chave do status encontrada:', statusKey);
-        
-        // Mostra alguns status para verificação
-        const sampleStatuses = rows.slice(0, 5).map(r => {
-            const statusKey = Object.keys(r).find(key => 
-                key.toLowerCase().includes('status')
-            );
-            return { 
-                data: r['DATA'], 
-                trem: r['NMERO DO TREM:'], 
-                statusKey: statusKey,
-                statusValue: statusKey ? r[statusKey] : 'NÃO ENCONTRADO'
-            };
-        });
-        console.log('Amostra de status:', sampleStatuses);
-    }
-    console.log('=== FIM DEBUG ===');
-}
+
+        // Nova função auxiliar para parse correto de linhas CSV
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current);
+            return result;
+        }
 
         function checkAuth() {
             const userData = sessionStorage.getItem('vlt_user');
@@ -891,6 +865,25 @@ function parseCSVLine(line) {
             if (pageName === 'usuarios') loadUsuarios();
         }
 
+        // FUNÇÃO DE PRINT PARA PASSAGEM DE SERVIÇO
+        function takePassagemScreenshot() {
+            const element = document.getElementById('page-passagem');
+            
+            html2canvas(element, { 
+                allowTaint: true, 
+                useCORS: true,
+                scale: 2,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'VLT_Passagem_Servico_' + new Date().toLocaleString('pt-BR').replace(/[/\\:]/g, '-') + '.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+
         function openPassagemFilterModal() { 
             document.getElementById('passagemFilterModal').classList.add('show'); 
         }
@@ -910,28 +903,26 @@ function parseCSVLine(line) {
             
             // Aplicar filtros automaticamente na nova interface
             document.getElementById('passagemGrupo').value = grupo;
-            document.getElementById('passagemDataInicio').value = dataStr;
-            document.getElementById('passagemDataFim').value = dataStr;
+            document.getElementById('passagemData').value = dataStr;
             
             applyPassagemFilters();
             closePassagemFilterModal();
         }
 
-function applyPassagemFilters() {
-    if (allRegistros.length === 0) {
-        fetch(REGISTRO_CSV).then(r => r.text()).then(csv => { 
-            allRegistros = parseCSV(csv); 
-            debugData(allRegistros); // LINHA NOVA ADICIONADA
-            processPassagemFilters(); 
-        }).catch(console.error);
-    } else { 
-        processPassagemFilters(); 
-    }
-}
+        // FUNÇÕES PARA FILTROS DA PASSAGEM DE SERVIÇO - COM 1 DATA APENAS
+        function applyPassagemFilters() {
+            if (allRegistros.length === 0) {
+                fetch(REGISTRO_CSV).then(r => r.text()).then(csv => { 
+                    allRegistros = parseCSV(csv); 
+                    processPassagemFilters(); 
+                }).catch(console.error);
+            } else { 
+                processPassagemFilters(); 
+            }
+        }
 
         function processPassagemFilters() {
-            const dataInicio = document.getElementById('passagemDataInicio').value;
-            const dataFim = document.getElementById('passagemDataFim').value;
+            const dataSelecionada = document.getElementById('passagemData').value;
             const grupo = document.getElementById('passagemGrupo').value;
             const trem = document.getElementById('passagemTrem').value.toLowerCase();
             const sistema = document.getElementById('passagemSistema').value.toLowerCase();
@@ -940,14 +931,20 @@ function applyPassagemFilters() {
             
             filteredPassagemData = allRegistros.filter(r => {
                 try {
-                    if (dataInicio) {
+                    // FILTRO DE DATA CORRIGIDO - compara apenas a data (ignora hora)
+                    if (dataSelecionada) {
                         const dataRegistro = new Date(r['DATA']);
-                        if (dataRegistro < new Date(dataInicio + 'T00:00:00')) return false;
+                        const dataFiltro = new Date(dataSelecionada);
+                        
+                        // Compara apenas ano, mês e dia
+                        const dataRegistroFormatada = new Date(dataRegistro.getFullYear(), dataRegistro.getMonth(), dataRegistro.getDate());
+                        const dataFiltroFormatada = new Date(dataFiltro.getFullYear(), dataFiltro.getMonth(), dataFiltro.getDate());
+                        
+                        if (dataRegistroFormatada.getTime() !== dataFiltroFormatada.getTime()) {
+                            return false;
+                        }
                     }
-                    if (dataFim) {
-                        const dataRegistro = new Date(r['DATA']);
-                        if (dataRegistro > new Date(dataFim + 'T23:59:59')) return false;
-                    }
+                    
                     if (grupo && r['GRUPO'] !== grupo) return false;
                     if (trem && !r['NMERO DO TREM:'].toLowerCase().includes(trem)) return false;
                     if (sistema && !r['SISTEMA'].toLowerCase().includes(sistema)) return false;
@@ -957,12 +954,13 @@ function applyPassagemFilters() {
                         if (!statusRegistro.includes(status.toUpperCase())) return false;
                     }
                     return true;
-                } catch { 
+                } catch (e) { 
+                    console.log('Erro no filtro:', e, r);
                     return false; 
                 }
             });
             
-            console.log(`Filtros aplicados na Passagem - Encontrados: ${filteredPassagemData.length} registros`);
+            console.log(`Filtros aplicados na Passagem - Data: ${dataSelecionada}, Encontrados: ${filteredPassagemData.length} registros`);
             renderPassagemTable();
         }
 
@@ -989,8 +987,7 @@ function applyPassagemFilters() {
         }
 
         function clearPassagemFilters() {
-            document.getElementById('passagemDataInicio').value = '';
-            document.getElementById('passagemDataFim').value = '';
+            document.getElementById('passagemData').value = '';
             document.getElementById('passagemGrupo').value = '';
             document.getElementById('passagemTrem').value = '';
             document.getElementById('passagemSistema').value = '';
