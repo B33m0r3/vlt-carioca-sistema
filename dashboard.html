@@ -470,21 +470,55 @@
                             </table>
                         </div>
                     </div>
-                    <!-- Novo Registro -->
-                    <div class="page" id="page-novo_registro">
-                        <div class="page-header">
-                            <h1>➕ Novo Registro</h1>
-                            <p>Registre uma nova falha ou evento no sistema</p>
-                        </div>
-                        <div class="center-content">
-                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?usp=dialog" target="_blank" class="btn-primary">
-                                <i class="fas fa-external-link-alt"></i> Abrir Formulário de Novo Registro
-                            </a>
-                            <p class="novo-registro-texto">
-                                ✅ Ao preencher e enviar o formulário, os dados serão adicionados automaticamente à planilha central e refletidos no sistema.
-                            </p>
-                        </div>
-                    </div>
+<!-- Novo Registro -->
+<div class="page" id="page-novo_registro">
+    <div class="page-header">
+        <h1>➕ Novo Registro</h1>
+        <p>Registre uma nova falha ou evento no sistema - Preencha diretamente abaixo</p>
+    </div>
+    
+    <div style="background: rgba(255, 255, 255, 0.95); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <h3 style="color: var(--dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-edit"></i> Formulário de Registro
+        </h3>
+        
+        <!-- FORMULÁRIO EMBUTIDO DO GOOGLE FORMS -->
+        <div style="width: 100%; height: 800px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative;">
+            <div class="loading-overlay" id="loading-forms">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; font-weight: 600; color: var(--primary);">Carregando formulário...</p>
+            </div>
+            <iframe 
+                src="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?embedded=true" 
+                width="100%" 
+                height="800" 
+                frameborder="0" 
+                marginheight="0" 
+                marginwidth="0"
+                onload="document.getElementById('loading-forms').classList.add('hidden')"
+                style="border: none; background: white;">
+                Carregando…
+            </iframe>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #f0f7ff; border-radius: 8px; border-left: 4px solid var(--primary);">
+            <p style="margin: 0; color: var(--dark); font-size: 14px; line-height: 1.5;">
+                <strong>✅ Formulário integrado:</strong> Preencha e envie diretamente aqui. 
+                Os dados serão salvos automaticamente na planilha central e aparecerão no sistema.
+            </p>
+        </div>
+    </div>
+    
+    <!-- BOTÃO ALTERNATIVO (opcional - se quiser manter como backup) -->
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform" 
+           target="_blank" 
+           class="btn-primary" 
+           style="background: linear-gradient(135deg, #667eea, #764ba2);">
+            <i class="fas fa-external-link-alt"></i> Abrir em Nova Guia (Caso tenha problemas)
+        </a>
+    </div>
+</div>
                     <!-- Relatórios -->
                     <div class="page" id="page-relatorios">
                         <div class="page-header">
