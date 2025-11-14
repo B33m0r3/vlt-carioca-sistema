@@ -933,33 +933,33 @@
             document.getElementById('resumo-passagem-container').innerHTML = summaryHtml;
         }
 
-        function renderPassagemTable(rows) {
-            const table = document.getElementById('passagem-table');
-            if (rows.length === 0) {
-                table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum registro encontrado para este plantão.</td></tr>';
-                document.getElementById('resumo-passagem-container').innerHTML = '';
-            } else {
-                table.innerHTML = rows.map(r => {
-                    const status = (r['STATUS ATUAL DO TREM'] || '').toLowerCase();
-                    let statusClass = 'status-liberado';
-                    
-                    if (status.includes('manuten')) statusClass = 'status-manutencao';
-                    else if (status.includes('agendad')) statusClass = 'status-agendado';
-                    else if (status.includes('colisa')) statusClass = 'status-colisao';
-                    else if (status.includes('prevent')) statusClass = 'status-preventiva';
-                    
-                    return `
-                        <tr>
-                            <td>${r['Coluna 1']}</td>
-                            <td>${r['NOME']}</td>
-                            <td>${r['NMERO DO TREM:']}</td>
-                            <td>${r['SISTEMA']}</td>
-                            <td>${r['DESCRIÇÃO DETALHADA']}</td>
-                            <td><span class="status-badge ${statusClass}">${r['STATUS ATUAL DO TREM']}</span></td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+function renderPassagemTable(rows) {
+    const table = document.getElementById('passagem-table');
+    if (rows.length === 0) {
+        table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum registro encontrado para este plantão.</td></tr>';
+        document.getElementById('resumo-passagem-container').innerHTML = '';
+    } else {
+        table.innerHTML = rows.map(r => {
+            const status = (r['STATUS ATUAL DO TREM'] || '').toLowerCase();
+            let statusClass = 'status-liberado';
+            
+            if (status.includes('manuten')) statusClass = 'status-manutencao';
+            else if (status.includes('agendad')) statusClass = 'status-agendado';
+            else if (status.includes('colisao')) statusClass = 'status-colisao';
+            else if (status.includes('preventiva')) statusClass = 'status-preventiva';
+            
+            return `
+                <tr>
+                    <td>${r['Coluna 1']}</td>
+                    <td>${r['NOME']}</td>
+                    <td>${r['NMERO DO TREM:']}</td>
+                    <td>${r['SISTEMA']}</td>
+                    <td>${r['DESCRIÇÃO DETALHADA']}</td>
+                    <td><span class="status-badge ${statusClass}">${r['STATUS ATUAL DO TREM']}</span></td>
+                </tr>
+            `;
+        }).join('');
+    }
         }
 
         function loadPassagemData() { /* Lógica movida para applyPassagemFilter */ }
@@ -1075,19 +1075,23 @@
             document.getElementById('download-buttons').style.display = 'none';
         }
 
-        function downloadCSV() {
-            if (filteredReportData.length === 0) { alert('Nenhum dado para exportar.'); return; }
-            
-            // CORREÇÃO: Criar um array de arrays para o XLSX
-            const csvContent = filteredReportData.map(r => [
-                r['Coluna 1'], r['NOME'], r['NMERO DO TREM:'], r['SISTEMA'], r['CÓDIGO IOS DA FALHA'], r['DESCRIÇÃO DETALHADA'], r['STATUS ATUAL DO TREM']
-            ]);
-            const headers = [['Data', 'Técnico', 'Trem', 'Sistema', 'IOS', 'Descrição', 'Status']];
-            const ws = XLSX.utils.aoa_to_sheet(headers.concat(csvContent));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Relatório');
-            XLSX.writeFile(wb, 'VLT_Relatorio_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-        }
+function downloadPDF() {
+    if (filteredReportData.length === 0) { 
+        alert('Nenhum dado para exportar.'); 
+        return; 
+    }
+    
+    // CORREÇÃO: Usar a biblioteca html2pdf.js
+    const element = document.getElementById('relatorio-table');
+    const opt = { 
+        margin: 10, 
+        filename: 'VLT_Relatorio_' + new Date().toISOString().slice(0, 10) + '.pdf', 
+        image: { type: 'jpeg', quality: 0.98 }, 
+        html2canvas: { scale: 2 }, 
+        jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' 
+    };
+    html2pdf().set(opt).from(element).save();
+}
 
         function downloadPDF() {
             if (filteredReportData.length === 0) { alert('Nenhum dado para exportar.'); return; }
