@@ -921,48 +921,107 @@
             }
         }
 
-        function processPassagemFilters() {
-            const dataSelecionada = document.getElementById('passagemData').value;
-            const grupo = document.getElementById('passagemGrupo').value;
-            const trem = document.getElementById('passagemTrem').value.toLowerCase();
-            const sistema = document.getElementById('passagemSistema').value.toLowerCase();
-            const tecnico = document.getElementById('passagemTecnico').value.toLowerCase();
-            const status = document.getElementById('passagemStatus').value;
+function processPassagemFilters() {
+    const dataSelecionada = document.getElementById('passagemData').value;
+    const grupo = document.getElementById('passagemGrupo').value;
+    const trem = document.getElementById('passagemTrem').value.toLowerCase();
+    const sistema = document.getElementById('passagemSistema').value.toLowerCase();
+    const tecnico = document.getElementById('passagemTecnico').value.toLowerCase();
+    const status = document.getElementById('passagemStatus').value;
+    
+    console.log('=== DEBUG FILTRO DATA ===');
+    console.log('Data selecionada no filtro:', dataSelecionada);
+    
+    filteredPassagemData = allRegistros.filter(r => {
+        try {
+            // DEBUG: Mostrar o que está na coluna DATA
+            const dataRegistro = r['DATA'];
+            console.log('Data do registro:', dataRegistro);
             
-            filteredPassagemData = allRegistros.filter(r => {
-                try {
-                    // FILTRO DE DATA CORRIGIDO - compara apenas a data (ignora hora)
-                    if (dataSelecionada) {
-                        const dataRegistro = new Date(r['DATA']);
-                        const dataFiltro = new Date(dataSelecionada);
-                        
-                        // Compara apenas ano, mês e dia
-                        const dataRegistroFormatada = new Date(dataRegistro.getFullYear(), dataRegistro.getMonth(), dataRegistro.getDate());
-                        const dataFiltroFormatada = new Date(dataFiltro.getFullYear(), dataFiltro.getMonth(), dataFiltro.getDate());
-                        
-                        if (dataRegistroFormatada.getTime() !== dataFiltroFormatada.getTime()) {
-                            return false;
-                        }
+            // FILTRO DE DATA CORRIGIDO - converte formatos diferentes
+            if (dataSelecionada) {
+                // Converte a data do registro (DD/MM/YYYY) para objeto Date
+                let dataRegistroObj;
+                
+                if (dataRegistro && dataRegistro.includes('/')) {
+                    // Formato DD/MM/YYYY HH:MM:SS
+                    const dataPart = dataRegistro.split(' ')[0]; // Pega apenas a parte da data
+                    const parts = dataPart.split('/');
+                    // parts[0] = dia, parts[1] = mês, parts[2] = ano
+                    if (parts.length === 3) {
+                        dataRegistroObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                    } else {
+                        console.log('❌ Formato de data inválido no registro:', dataRegistro);
+                        return false;
                     }
-                    
-                    if (grupo && r['GRUPO'] !== grupo) return false;
-                    if (trem && !r['NMERO DO TREM:'].toLowerCase().includes(trem)) return false;
-                    if (sistema && !r['SISTEMA'].toLowerCase().includes(sistema)) return false;
-                    if (tecnico && !r['NOME'].toLowerCase().includes(tecnico)) return false;
-                    if (status) {
-                        const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
-                        if (!statusRegistro.includes(status.toUpperCase())) return false;
-                    }
-                    return true;
-                } catch (e) { 
-                    console.log('Erro no filtro:', e, r);
-                    return false; 
+                } else {
+                    console.log('❌ Data do registro vazia ou formato inválido:', dataRegistro);
+                    return false;
                 }
-            });
+                
+                // Converte a data do filtro (YYYY-MM-DD) para objeto Date
+                const dataFiltroObj = new Date(dataSelecionada);
+                
+                // DEBUG: Mostrar as datas convertidas
+                console.log('Data registro convertida:', dataRegistroObj);
+                console.log('Data filtro convertida:', dataFiltroObj);
+                
+                // Compara apenas ano, mês e dia (ignora horas)
+                const isSameDate = 
+                    dataRegistroObj.getFullYear() === dataFiltroObj.getFullYear() &&
+                    dataRegistroObj.getMonth() === dataFiltroObj.getMonth() &&
+                    dataRegistroObj.getDate() === dataFiltroObj.getDate();
+                
+                console.log('Datas iguais?', isSameDate);
+                
+                if (!isSameDate) {
+                    console.log('❌ Registro FILTRADO FORA - datas diferentes');
+                    return false;
+                }
+                console.log('✅ Registro MANTIDO - datas iguais');
+            }
             
-            console.log(`Filtros aplicados na Passagem - Data: ${dataSelecionada}, Encontrados: ${filteredPassagemData.length} registros`);
-            renderPassagemTable();
+            // Outros filtros...
+            if (grupo && r['GRUPO'] !== grupo) {
+                console.log('❌ Registro FILTRADO FORA - grupo diferente');
+                return false;
+            }
+            if (trem && !r['NMERO DO TREM:'].toLowerCase().includes(trem)) {
+                console.log('❌ Registro FILTRADO FORA - trem diferente');
+                return false;
+            }
+            if (sistema && !r['SISTEMA'].toLowerCase().includes(sistema)) {
+                console.log('❌ Registro FILTRADO FORA - sistema diferente');
+                return false;
+            }
+            if (tecnico && !r['NOME'].toLowerCase().includes(tecnico)) {
+                console.log('❌ Registro FILTRADO FORA - técnico diferente');
+                return false;
+            }
+            if (status) {
+                const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
+                if (!statusRegistro.includes(status.toUpperCase())) {
+                    console.log('❌ Registro FILTRADO FORA - status diferente');
+                    return false;
+                }
+            }
+            console.log('✅ Registro ACEITO - passou em todos os filtros');
+            return true;
+        } catch (e) { 
+            console.log('❌ Erro no filtro:', e, 'Registro:', r);
+            return false; 
         }
+    });
+    
+    console.log(`=== RESULTADO FINAL ===`);
+    console.log(`Data selecionada: ${dataSelecionada}`);
+    console.log(`Registros encontrados: ${filteredPassagemData.length}`);
+    if (filteredPassagemData.length > 0) {
+        console.log('Primeiros registros:', filteredPassagemData.slice(0, 3));
+    }
+    
+    renderPassagemTable();
+}
 
         function renderPassagemTable() {
             const table = document.getElementById('passagem-table');
