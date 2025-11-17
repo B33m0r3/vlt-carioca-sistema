@@ -397,6 +397,62 @@
         .document-btn:hover {
             transform: translateY(-2px);
         }
+        
+        /* Estilos para formulários embutidos */
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+        }
+        
+        .tabs-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 0;
+        }
+        
+        .tab-btn {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--dark);
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        .tab-btn.active {
+            background: white;
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: white;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
 
         @media (max-width: 768px) {
             .top-bar { padding: 12px 15px; }
@@ -408,6 +464,7 @@
             .filter-btn { width: 100%; }
             .sobre-container { flex-direction: column; }
             .documents-container { grid-template-columns: 1fr; }
+            .form-iframe { height: 600px; }
         }
     </style>
 </head>
@@ -439,6 +496,19 @@
     <li class="nav-item" onclick="showPage('usuarios', event)" id="usuarios-menu">
         <i class="fas fa-users"></i>
         <span class="nav-label">Usuários</span>
+    </li>
+    <!-- NOVAS ABAS -->
+    <li class="nav-item" onclick="showPage('laboratorio', event)">
+        <i class="fas fa-flask"></i>
+        <span class="nav-label">Laboratório</span>
+    </li>
+    <li class="nav-item" onclick="showPage('eva', event)">
+        <i class="fas fa-robot"></i>
+        <span class="nav-label">EVA</span>
+    </li>
+    <li class="nav-item" onclick="showPage('refrigeracao', event)">
+        <i class="fas fa-snowflake"></i>
+        <span class="nav-label">Refrigeração</span>
     </li>
     <!-- NOVA ABA DOCUMENTAÇÃO -->
     <li class="nav-item" onclick="showPage('documentacao', event)">
@@ -558,13 +628,49 @@
                             <h1>➕ Novo Registro</h1>
                             <p>Registre uma nova falha ou evento no sistema</p>
                         </div>
-                        <div class="center-content">
-                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?usp=dialog" target="_blank" class="btn-primary">
-                                <i class="fas fa-external-link-alt"></i> Abrir Formulário de Novo Registro
-                            </a>
-                            <p class="novo-registro-texto">
-                                ✅ Ao preencher e enviar o formulário, os dados serão adicionados automaticamente à planilha central e refletidos no sistema.
-                            </p>
+                        
+                        <!-- Abas para Formulário e Dados -->
+                        <div class="tabs-container">
+                            <button class="tab-btn active" onclick="switchTab('novo_registro', 'form')">Formulário</button>
+                            <button class="tab-btn" onclick="switchTab('novo_registro', 'data')">Dados</button>
+                        </div>
+                        
+                        <!-- Conteúdo da Aba Formulário -->
+                        <div class="tab-content active" id="novo_registro-form">
+                            <div class="form-container">
+                                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?usp=dialog" class="form-iframe"></iframe>
+                            </div>
+                        </div>
+                        
+                        <!-- Conteúdo da Aba Dados -->
+                        <div class="tab-content" id="novo_registro-data">
+                            <div class="filter-container">
+                                <input type="date" id="novoRegistroData" class="filter-input" placeholder="Data">
+                                <input type="text" id="novoRegistroTecnico" class="filter-input" placeholder="Técnico">
+                                <input type="text" id="novoRegistroEquipamento" class="filter-input" placeholder="Equipamento">
+                                <button class="filter-btn" onclick="applyNovoRegistroFilters()">
+                                    <i class="fas fa-filter"></i> Aplicar Filtros
+                                </button>
+                                <button class="filter-btn" onclick="clearNovoRegistroFilters()">
+                                    <i class="fas fa-times"></i> Limpar
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Técnico</th>
+                                            <th>Equipamento</th>
+                                            <th>Descrição</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="novo_registro-table">
+                                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para carregar os dados.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <!-- Relatórios -->
@@ -645,6 +751,177 @@
                                     <tr><td colspan="6" style="text-align: center; padding: 40px;" class="loading">⏳ Carregando usuários...</td></tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                    
+                    <!-- NOVA PÁGINA LABORATÓRIO -->
+                    <div class="page" id="page-laboratorio">
+                        <div class="page-header">
+                            <h1>🔬 Laboratório</h1>
+                            <p>Registros e atividades da equipe de laboratório</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQh0a-BMomvvOomRWYGlmoZSPG6ZuwF1jRXFrm8yhzMzizB9vWBgFiFBRyFBRRHQfVVoRppT3E8FBKS/pub?gid=43329994&single=true&output=csv" target="_blank" class="btn-primary">
+                                <i class="fas fa-table"></i> Acessar Planilha
+                            </a>
+                        </div>
+                        
+                        <!-- Abas para Formulário e Dados -->
+                        <div class="tabs-container">
+                            <button class="tab-btn active" onclick="switchTab('laboratorio', 'form')">Formulário</button>
+                            <button class="tab-btn" onclick="switchTab('laboratorio', 'data')">Dados</button>
+                        </div>
+                        
+                        <!-- Conteúdo da Aba Formulário -->
+                        <div class="tab-content active" id="laboratorio-form">
+                            <div class="form-container">
+                                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform?usp=publish-editor" class="form-iframe"></iframe>
+                            </div>
+                        </div>
+                        
+                        <!-- Conteúdo da Aba Dados -->
+                        <div class="tab-content" id="laboratorio-data">
+                            <div class="filter-container">
+                                <input type="date" id="laboratorioData" class="filter-input" placeholder="Data">
+                                <input type="text" id="laboratorioTecnico" class="filter-input" placeholder="Técnico">
+                                <input type="text" id="laboratorioEquipamento" class="filter-input" placeholder="Equipamento">
+                                <button class="filter-btn" onclick="applyLaboratorioFilters()">
+                                    <i class="fas fa-filter"></i> Aplicar Filtros
+                                </button>
+                                <button class="filter-btn" onclick="clearLaboratorioFilters()">
+                                    <i class="fas fa-times"></i> Limpar
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Técnico</th>
+                                            <th>Equipamento</th>
+                                            <th>Descrição</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="laboratorio-table">
+                                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para carregar os dados.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- NOVA PÁGINA EVA -->
+                    <div class="page" id="page-eva">
+                        <div class="page-header">
+                            <h1>🤖 EVA</h1>
+                            <p>Registros e atividades da equipe EVA</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQh0a-BMomvvOomRWYGlmoZSPG6ZuwF1jRXFrm8yhzMzizB9vWBgFiFBRyFBRRHQfVVoRppT3E8FBKS/pub?gid=927195938&single=true&output=csv" target="_blank" class="btn-primary">
+                                <i class="fas fa-table"></i> Acessar Planilha
+                            </a>
+                        </div>
+                        
+                        <!-- Abas para Formulário e Dados -->
+                        <div class="tabs-container">
+                            <button class="tab-btn active" onclick="switchTab('eva', 'form')">Formulário</button>
+                            <button class="tab-btn" onclick="switchTab('eva', 'data')">Dados</button>
+                        </div>
+                        
+                        <!-- Conteúdo da Aba Formulário -->
+                        <div class="tab-content active" id="eva-form">
+                            <div class="form-container">
+                                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeixWIcnMdFmqHnxwO-vb2F86AKW6g6KRqDwMsYTk3Baj6l8w/viewform?usp=publish-editor" class="form-iframe"></iframe>
+                            </div>
+                        </div>
+                        
+                        <!-- Conteúdo da Aba Dados -->
+                        <div class="tab-content" id="eva-data">
+                            <div class="filter-container">
+                                <input type="date" id="evaData" class="filter-input" placeholder="Data">
+                                <input type="text" id="evaTecnico" class="filter-input" placeholder="Técnico">
+                                <input type="text" id="evaEquipamento" class="filter-input" placeholder="Equipamento">
+                                <button class="filter-btn" onclick="applyEvaFilters()">
+                                    <i class="fas fa-filter"></i> Aplicar Filtros
+                                </button>
+                                <button class="filter-btn" onclick="clearEvaFilters()">
+                                    <i class="fas fa-times"></i> Limpar
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Técnico</th>
+                                            <th>Equipamento</th>
+                                            <th>Descrição</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="eva-table">
+                                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para carregar os dados.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- NOVA PÁGINA REFRIGERAÇÃO -->
+                    <div class="page" id="page-refrigeracao">
+                        <div class="page-header">
+                            <h1>❄️ Refrigeração</h1>
+                            <p>Registros e atividades da equipe de refrigeração</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQh0a-BMomvvOomRWYGlmoZSPG6ZuwF1jRXFrm8yhzMzizB9vWBgFiFBRyFBRRHQfVVoRppT3E8FBKS/pub?gid=131107120&single=true&output=csv" target="_blank" class="btn-primary">
+                                <i class="fas fa-table"></i> Acessar Planilha
+                            </a>
+                        </div>
+                        
+                        <!-- Abas para Formulário e Dados -->
+                        <div class="tabs-container">
+                            <button class="tab-btn active" onclick="switchTab('refrigeracao', 'form')">Formulário</button>
+                            <button class="tab-btn" onclick="switchTab('refrigeracao', 'data')">Dados</button>
+                        </div>
+                        
+                        <!-- Conteúdo da Aba Formulário -->
+                        <div class="tab-content active" id="refrigeracao-form">
+                            <div class="form-container">
+                                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSekQ4e_rCSuzitRhtpjq48VR2ttobQvvRr--e0qcTH5PU9azQ/viewform?usp=dialog" class="form-iframe"></iframe>
+                            </div>
+                        </div>
+                        
+                        <!-- Conteúdo da Aba Dados -->
+                        <div class="tab-content" id="refrigeracao-data">
+                            <div class="filter-container">
+                                <input type="date" id="refrigeracaoData" class="filter-input" placeholder="Data">
+                                <input type="text" id="refrigeracaoTecnico" class="filter-input" placeholder="Técnico">
+                                <input type="text" id="refrigeracaoEquipamento" class="filter-input" placeholder="Equipamento">
+                                <button class="filter-btn" onclick="applyRefrigeracaoFilters()">
+                                    <i class="fas fa-filter"></i> Aplicar Filtros
+                                </button>
+                                <button class="filter-btn" onclick="clearRefrigeracaoFilters()">
+                                    <i class="fas fa-times"></i> Limpar
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Técnico</th>
+                                            <th>Equipamento</th>
+                                            <th>Descrição</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="refrigeracao-table">
+                                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para carregar os dados.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     
@@ -817,11 +1094,16 @@
             </button>
         </div>
     </div>
-
-<script>
+    <script>
     const motivationalQuotes = [ "💪 Excelência é a jornada, não o destino!", "🚆 Segurança em primeiro lugar, sempre!", "🛡️ Proteção é responsabilidade de todos!", "⚡ Somos o coração ferroviário do Rio!", "🎯 Precisão e dedicação em cada operação!", "👥 Juntos fazemos a diferença!", "🌟 VLT Carioca: Mobilidade com segurança!", "✅ Qualidade: nosso compromisso!", "🚀 Inovação todos os dias!", "❤️ Paixão pelo que fazemos!", "🏆 Somos os melhores ferroviários!", "🔧 Manutenção impecável, sempre!", "⭐ Faça sua parte, sempre com cuidado!", "💯 100% de comprometimento!", "🎖️ Orgulho de servir a população!", "🚇 Conectando vidas, cidades e sonhos!", "🛡️ Cada detalhe conta para a segurança!", "👨‍🔧 Profissionalismo em tudo!", "🌉 VLT: Liderança em mobilidade urbana!", "💡 Ideias para melhorar a cada dia!" ];
     const REGISTRO_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=195449004&single=true&output=csv';
     const USUARIOS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1605075317&single=true&output=csv';
+    
+    // Links para as novas abas
+    const LABORATORIO_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1204384471&single=true&output=csv';
+    const EVA_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1729556296&single=true&output=csv';
+    const REFRIGERACAO_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1669656650&single=true&output=csv';
+    
     const linhasData = {
         1: { cor: 'Azul', trajeto: 'Santos Dumont ✈️ → ... → Terminal Gentileza', estacoes: { 'SDU': 'Santos Dumont', 'ACM': 'Antônio Carlos (MAM)', 'CIN': 'Cinelândia', 'CAR': 'Carioca', 'STS': 'Sete de Setembro', 'CAN': 'Candelária', 'SAB': 'São Bento', 'PAM': 'Parada dos Museus', 'PNV': 'Parada dos Navios (Valongo)', 'UAR': 'Utopia (AquaRio)', 'CDS': 'Cidade do Samba (Tia Ciata)', 'SCR': 'Santo Cristo', 'GAM': 'Gamboa', 'PER': 'Providência', 'PRO': 'Providência', 'EQU': 'Equador', 'ROD': 'Rodoviária', 'TIG': 'Terminal Gentileza' } },
         2: { cor: 'Verde', trajeto: 'Praça XV → ... → Praia Formosa', estacoes: { 'PXV': 'Praça XV', 'COL': 'Colombo', 'TIR': 'Tiradentes', 'SAA': 'Saara', 'COA': 'Cristiano Ottoni (Pequena África)', 'CEN': 'Central', 'GAM': 'Gamboa', 'SCR': 'Santo Cristo', 'CDG': 'Cordeiro da Graça', 'VLO': 'Vila Olímpica', 'PER': 'Pereira Reis', 'EQU': 'Equador', 'ROD': 'Rodoviária', 'PFM': 'Praia Formosa' } },
@@ -833,7 +1115,14 @@
     let filteredReportData = [];
     let filteredPassagemData = [];
     
-    // LISTA DE DOCUMENTOS PDF - ATUALIZE COM SEUS ARQUIVOS
+    // Dados para as novas abas
+    let laboratorioData = [];
+    let evaData = [];
+    let refrigeracaoData = [];
+    let filteredLaboratorioData = [];
+    let filteredEvaData = [];
+    let filteredRefrigeracaoData = [];
+    
     // LISTA DE DOCUMENTOS PDF - ATUALIZE COM SEUS ARQUIVOS
     const documentosPDF = [
         { 
@@ -988,6 +1277,27 @@
 
     function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('collapsed'); }
 
+    // Função para alternar entre abas (Formulário e Dados)
+    function switchTab(pageName, tabName) {
+        // Remove a classe active de todas as abas e conteúdos
+        document.querySelectorAll(`#${pageName}-form, #${pageName}-data`).forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        document.querySelectorAll(`#${pageName}-form`).forEach(tab => {
+            tab.previousElementSibling.classList.remove('active');
+        });
+        
+        // Adiciona a classe active à aba selecionada
+        document.querySelectorAll(`#${pageName}-${tabName}`).forEach(tab => {
+            tab.classList.add('active');
+        });
+        
+        document.querySelectorAll(`#${pageName}-${tabName}`).forEach(tab => {
+            tab.previousElementSibling.classList.add('active');
+        });
+    }
+
     function showPage(pageName, event = null) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -1006,6 +1316,9 @@
             'novo_registro': '➕ Novo Registro', 
             'relatorios': '📊 Relatórios', 
             'usuarios': '👥 Usuários',
+            'laboratorio': '🔬 Laboratório',
+            'eva': '🤖 EVA',
+            'refrigeracao': '❄️ Refrigeração',
             'documentacao': '📒 Documentação',
             'sobre': 'ℹ️ Sobre o VLT' 
         };
@@ -1028,6 +1341,15 @@
         if (pageName === 'novo_registro') { 
             screenshotBtn.style.display = 'none'; 
         }
+        if (pageName === 'laboratorio') { 
+            screenshotBtn.style.display = 'none'; 
+        }
+        if (pageName === 'eva') { 
+            screenshotBtn.style.display = 'none'; 
+        }
+        if (pageName === 'refrigeracao') { 
+            screenshotBtn.style.display = 'none'; 
+        }
         if (pageName === 'documentacao') { 
             screenshotBtn.style.display = 'inline-block'; 
         }
@@ -1044,6 +1366,9 @@
         }
         if (pageName === 'usuarios') loadUsuarios();
         if (pageName === 'documentacao') loadDocumentacao();
+        if (pageName === 'laboratorio') loadLaboratorioData();
+        if (pageName === 'eva') loadEvaData();
+        if (pageName === 'refrigeracao') loadRefrigeracaoData();
     }
 
     // FUNÇÕES PARA A ABA DOCUMENTAÇÃO
@@ -1178,400 +1503,47 @@
         }
     }
 
-function processPassagemFilters() {
-    const dataSelecionada = document.getElementById('passagemData').value;
-    const grupo = document.getElementById('passagemGrupo').value;
-    const trem = document.getElementById('passagemTrem').value.toLowerCase();
-    const sistema = document.getElementById('passagemSistema').value.toLowerCase();
-    const tecnico = document.getElementById('passagemTecnico').value.toLowerCase();
-    const status = document.getElementById('passagemStatus').value;
-    
-    console.log('=== DEBUG FILTRO DATA PASSAGEM ===');
-    console.log('Data selecionada no filtro:', dataSelecionada);
-    
-    filteredPassagemData = allRegistros.filter(r => {
-        try {
-            // Usando os nomes exatos das colunas da nova planilha
-            const dataRegistro = r['Carimbo de data/hora'] || '';
-            
-            // FILTRO DE DATA CORRIGIDO
-            if (dataSelecionada) {
-                const partsFiltro = dataSelecionada.split('-');
-                const dataFiltroFormatada = `${partsFiltro[2]}/${partsFiltro[1]}/${partsFiltro[0]}`;
+    function processPassagemFilters() {
+        const dataSelecionada = document.getElementById('passagemData').value;
+        const grupo = document.getElementById('passagemGrupo').value;
+        const trem = document.getElementById('passagemTrem').value.toLowerCase();
+        const sistema = document.getElementById('passagemSistema').value.toLowerCase();
+        const tecnico = document.getElementById('passagemTecnico').value.toLowerCase();
+        const status = document.getElementById('passagemStatus').value;
+        
+        console.log('=== DEBUG FILTRO DATA PASSAGEM ===');
+        console.log('Data selecionada no filtro:', dataSelecionada);
+        
+        filteredPassagemData = allRegistros.filter(r => {
+            try {
+                // Usando os nomes exatos das colunas da nova planilha
+                const dataRegistro = r['Carimbo de data/hora'] || '';
                 
-                const dataRegistroFormatada = dataRegistro.split(' ')[0];
-                
-                console.log('Data do registro:', dataRegistroFormatada);
-                console.log('Data do filtro:', dataFiltroFormatada);
-                
-                if (dataRegistroFormatada !== dataFiltroFormatada) {
-                    return false;
-                }
-            }
-            
-            // Usando os nomes exatos das colunas da nova planilha
-            const nomeTecnico = r['NOME E SOBRENOME'] || '';
-            const numeroTrem = r['NÚMERO DO TREM'] || '';
-            const sistemaTrem = r['SISTEMAS'] || '';
-            
-            // Outros filtros com colunas atualizadas
-            if (grupo && r['GRUPO'] !== grupo) return false;
-            if (trem && !numeroTrem.toLowerCase().includes(trem)) return false;
-            if (sistema && !sistemaTrem.toLowerCase().includes(sistema)) return false;
-            if (tecnico && !nomeTecnico.toLowerCase().includes(tecnico)) return false;
-            if (status) {
-                const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
-                if (!statusRegistro.includes(status.toUpperCase())) return false;
-            }
-            return true;
-        } catch (e) { 
-            console.log('❌ Erro no filtro:', e, r);
-            return false; 
-        }
-    });
-    
-    console.log(`=== RESULTADO PASSAGEM ===`);
-    console.log(`Filtros aplicados - Data: ${dataSelecionada}, Encontrados: ${filteredPassagemData.length} registros`);
-    
-    renderPassagemTable();
-}
-
-function renderPassagemTable() {
-    const table = document.getElementById('passagem-table');
-    if (filteredPassagemData.length === 0) {
-        table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-    } else {
-        table.innerHTML = filteredPassagemData.map(r => {
-            // Usando os nomes exatos das colunas da nova planilha
-            const data = r['Carimbo de data/hora'] || '';
-            const nome = r['NOME E SOBRENOME'] || '';
-            const trem = r['NÚMERO DO TREM'] || '';
-            const sistema = r['SISTEMAS'] || '';
-            const descricao = r['DESCRIÇÃO DETALHADA'] || '';
-            const status = r['STATUS ATUAL DO TREM'] || 'NÃO INFORMADO';
-            
-            return `
-                <tr>
-                    <td>${data}</td>
-                    <td>${nome}</td>
-                    <td>${trem}</td>
-                    <td>${sistema}</td>
-                    <td>${descricao}</td>
-                    <td>${status}</td>
-                </tr>
-            `;
-        }).join('');
-    }
-}
-
-    function clearPassagemFilters() {
-        document.getElementById('passagemData').value = '';
-        document.getElementById('passagemGrupo').value = '';
-        document.getElementById('passagemTrem').value = '';
-        document.getElementById('passagemSistema').value = '';
-        document.getElementById('passagemTecnico').value = '';
-        document.getElementById('passagemStatus').value = '';
-        filteredPassagemData = [];
-        document.getElementById('passagem-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Clique em "Aplicar Filtros" para gerar os dados</td></tr>';
-    }
-
-    function loadPassagemData() {
-        // Carrega os dados iniciais se ainda não foram carregados
-        if (allRegistros.length === 0) {
-            fetch(REGISTRO_CSV).then(r => r.text()).then(csv => { 
-                allRegistros = parseCSV(csv); 
-                console.log('Dados da passagem carregados:', allRegistros.length, 'registros');
-            }).catch(console.error);
-        }
-    }
-
-    // FUNÇÕES PARA RELATÓRIOS - COM COLUNAS ATUALIZADAS
-    function applyFilters() {
-        if (allRegistros.length === 0) {
-            fetch(REGISTRO_CSV).then(r => r.text()).then(csv => { 
-                allRegistros = parseCSV(csv); 
-                processFilters(); 
-            }).catch(console.error);
-        } else { 
-            processFilters(); 
-        }
-    }
-
-function processFilters() {
-    const dataInicio = document.getElementById('filterDataInicio').value;
-    const dataFim = document.getElementById('filterDataFim').value;
-    const trem = document.getElementById('filterTrem').value.toLowerCase();
-    const sistema = document.getElementById('filterSistema').value.toLowerCase();
-    const equipe = document.getElementById('filterEquipe').value.toUpperCase();
-    const tecnico = document.getElementById('filterTecnico').value.toLowerCase();
-    const ios = document.getElementById('filterIOS').value.toLowerCase();
-    const status = document.getElementById('filterStatus').value;
-    
-    console.log('=== DEBUG FILTRO DATA RELATÓRIOS ===');
-    console.log('Data início:', dataInicio, 'Data fim:', dataFim);
-    
-    filteredReportData = allRegistros.filter(r => {
-        try {
-            // Usando os nomes exatos das colunas da nova planilha
-            const dataRegistro = r['Carimbo de data/hora'] || '';
-            
-            // FILTRO DE DATA CORRIGIDO
-            if (dataInicio || dataFim) {
-                const dataRegistroFormatada = dataRegistro.split(' ')[0];
-                const partsRegistro = dataRegistroFormatada.split('/');
-                const dataRegistroObj = new Date(partsRegistro[2], partsRegistro[1] - 1, partsRegistro[0]);
-                
-                if (dataInicio) {
-                    const dataInicioObj = new Date(dataInicio);
-                    if (dataRegistroObj < dataInicioObj) return false;
+                // FILTRO DE DATA CORRIGIDO
+                if (dataSelecionada) {
+                    const partsFiltro = dataSelecionada.split('-');
+                    const dataFiltroFormatada = `${partsFiltro[2]}/${partsFiltro[1]}/${partsFiltro[0]}`;
+                    
+                    const dataRegistroFormatada = dataRegistro.split(' ')[0];
+                    
+                    console.log('Data do registro:', dataRegistroFormatada);
+                    console.log('Data do filtro:', dataFiltroFormatada);
+                    
+                    if (dataRegistroFormatada !== dataFiltroFormatada) {
+                        return false;
+                    }
                 }
                 
-                if (dataFim) {
-                    const dataFimObj = new Date(dataFim);
-                    dataFimObj.setHours(23, 59, 59, 999);
-                    if (dataRegistroObj > dataFimObj) return false;
-                }
-            }
-            
-            // Usando os nomes exatos das colunas da nova planilha
-            const nomeTecnico = r['NOME E SOBRENOME'] || '';
-            const numeroTrem = r['NÚMERO DO TREM'] || '';
-            const sistemaTrem = r['SISTEMAS'] || '';
-            const codigoIOS = r['CÓDIGO IOS DA FALHA'] || '';
-            
-            // Outros filtros com colunas atualizadas
-            if (trem && !numeroTrem.toLowerCase().includes(trem)) return false;
-            if (sistema && !sistemaTrem.toLowerCase().includes(sistema)) return false;
-            if (equipe && r['GRUPO'] !== equipe) return false;
-            if (tecnico && !nomeTecnico.toLowerCase().includes(tecnico)) return false;
-            if (ios && !codigoIOS.toLowerCase().includes(ios)) return false;
-            if (status) {
-                const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
-                if (!statusRegistro.includes(status.toUpperCase())) return false;
-            }
-            return true;
-        } catch (e) { 
-            console.log('❌ Erro no filtro relatórios:', e, r);
-            return false; 
-        }
-    });
-    
-    console.log(`=== RESULTADO RELATÓRIOS ===`);
-    console.log(`Filtros aplicados - Encontrados: ${filteredReportData.length} registros`);
-    renderReportTable();
-}
-
-function renderReportTable() {
-    const table = document.getElementById('relatorio-table');
-    if (filteredReportData.length === 0) {
-        table.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-        document.getElementById('download-buttons').style.display = 'none';
-    } else {
-        table.innerHTML = filteredReportData.map(r => {
-            // Usando os nomes exatos das colunas da nova planilha
-            const data = r['Carimbo de data/hora'] || '';
-            const nome = r['NOME E SOBRENOME'] || '';
-            const trem = r['NÚMERO DO TREM'] || '';
-            const sistema = r['SISTEMAS'] || '';
-            const ios = r['CÓDIGO IOS DA FALHA'] || '';
-            const descricao = r['DESCRIÇÃO DETALHADA'] || '';
-            const status = r['STATUS ATUAL DO TREM'] || 'NÃO INFORMADO';
-            
-            return `
-                <tr>
-                    <td>${data}</td>
-                    <td>${nome}</td>
-                    <td>${trem}</td>
-                    <td>${sistema}</td>
-                    <td>${ios}</td>
-                    <td>${descricao}</td>
-                    <td>${status}</td>
-                </tr>
-            `;
-        }).join('');
-        document.getElementById('download-buttons').style.display = 'flex';
-    }
-}
-
-    function clearFilters() {
-        document.getElementById('filterDataInicio').value = '';
-        document.getElementById('filterDataFim').value = '';
-        document.getElementById('filterTrem').value = '';
-        document.getElementById('filterSistema').value = '';
-        document.getElementById('filterEquipe').value = '';
-        document.getElementById('filterTecnico').value = '';
-        document.getElementById('filterIOS').value = '';
-        document.getElementById('filterStatus').value = '';
-        filteredReportData = [];
-        document.getElementById('relatorio-table').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Clique em "Aplicar Filtros" para gerar o relatório</td></tr>';
-        document.getElementById('download-buttons').style.display = 'none';
-    }
-
-    function loadUsuarios() {
-        fetch(USUARIOS_CSV)
-            .then(r => r.text())
-            .then(csv => {
-                const rows = parseCSV(csv);
-                const table = document.getElementById('usuarios-table');
-                table.innerHTML = rows.map(r => `
-                    <tr>
-                        <td>${r.Usuario}</td>
-                        <td>${r.Nome_Completo}</td>
-                        <td>${r.Email}</td>
-                        <td>${r.Telefone}</td>
-                        <td><span style="padding:4px 12px;border-radius:12px;background:rgba(102,126,234,0.1);color:#667eea;font-size:12px;font-weight:600;">${r.Tipo || '-'}</span></td>
-                        <td><span style="padding:4px 12px;border-radius:12px;background:#e8f8f5;color:#27ae60;font-size:12px;font-weight:600;">${r.Ativo || '-'}</span></td>
-                    </tr>
-                `).join('');  
-            })
-            .catch(e => {
-                console.error('Erro ao carregar usuários:', e);
-                document.getElementById('usuarios-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Erro ao carregar usuários.</td></tr>';
-            });
-    }
-
-    function downloadCSV() {
-        if (filteredReportData.length === 0) { 
-            alert('Nenhum dado para exportar.'); 
-            return; 
-        }
-        
-        const headers = ['Carimbo de data/hora', 'NOME E SOBRENOME', 'NÚMERO DO TREM:', 'SISTEMAS', 'CÓDIGO IOS DA FALHA', 'DESCRIÇÃO DETALHADA', 'STATUS ATUAL DO TREM'];
-        let csvContent = headers.join(',') + '\n';
-        
-        filteredReportData.forEach(row => {
-            const rowData = headers.map(header => {
-                let value = row[header] || '';
-                if (value.includes(',')) {
-                    value = `"${value.replace(/"/g, '""')}"`;
-                }
-                return value;
-            });
-            csvContent += rowData.join(',') + '\n';
-        });
-        
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'VLT_Relatorio_' + new Date().toISOString().slice(0, 10) + '.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    function downloadPDF() {
-        if (filteredReportData.length === 0) { 
-            alert('Nenhum dado para exportar.'); 
-            return; 
-        }
-        
-        const element = document.getElementById('relatorio-table');
-        const opt = { 
-            margin: 10, 
-            filename: 'VLT_Relatorio_' + new Date().toISOString().slice(0, 10) + '.pdf', 
-            image: { type: 'jpeg', quality: 0.98 }, 
-            html2canvas: { scale: 2 }, 
-            jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
-        };
-        html2pdf().set(opt).from(element).save();
-    }
-
-    function takeScreenshot() {
-        const element = document.querySelector('.pages-wrapper');
-        html2canvas(element, { allowTaint: true, useCORS: true }).then(canvas => {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = 'VLT_Screenshot_' + new Date().toLocaleString('pt-BR').replace(/[/\\:]/g, '-') + '.png';
-            link.click();
-        });
-    }
-
-    // Funções da Aba Sobre
-    function searchStation() {
-        const query = document.getElementById('searchEstacao').value.toLowerCase();
-        const resultDiv = document.getElementById('estacao-result');
-        resultDiv.innerHTML = '';
-        if (!query) return;
-        let found = null;
-        for (let i = 1; i <= 4; i++) {
-            const estacoes = Object.values(linhasData[i].estacoes);
-            const siglas = Object.keys(linhasData[i].estacoes);
-            const index = estacoes.findIndex(e => e.toLowerCase().includes(query));
-            if (index !== -1) {
-                found = { linha: i, ...linhasData[i], index, nome: estacoes[index], sigla: siglas[index] };
-                break;
-            }
-        }
-        if (found) {
-            const estacoes = Object.values(found.estacoes);
-            const index = estacoes.indexOf(found.nome);
-            const anterior = estacoes[index - 1];
-            const proxima = estacoes[index + 1];
-            const terminal = (index === 0 || index === estacoes.length - 1);
-            resultDiv.innerHTML = `
-                <div class="info-card">
-                    <h4>Resultado da Busca</h4>
-                    <p><strong>Estação:</strong> ${found.nome} (${found.sigla})</p>
-                    <p><strong>Linha:</strong> ${found.cor} (Linha ${found.linha})</p>
-                    <p><strong>Anterior:</strong> ${anterior || 'Início da Linha'}</p>
-                    <p><strong>Próxima:</strong> ${proxima || 'Fim da Linha'}</p>
-                    ${terminal ? '<p><strong>⚠️ Estação Terminal</strong></p>' : ''}
-                </div>
-            `;
-        } else {
-            resultDiv.innerHTML = '<p style="color:#e74c3c;">Estação não encontrada.</p>';
-        }
-    }
-
-    function showLineStations(linhaNum) {
-        const listDiv = document.getElementById('linhas-list');
-        const linha = linhasData[linhaNum];
-        const estacoes = Object.entries(linha.estacoes);
-        listDiv.innerHTML = `<h4>Estações da Linha ${linhaNum} - ${linha.cor}</h4>` +
-            estacoes.map(([sigla, nome]) => `<div class="estacao-item">${nome} (${sigla})</div>`).join('');
-        listDiv.style.display = 'block';
-    }
-
-    function openProfileModal() { document.getElementById('profileModal').classList.add('show'); }
-    function closeProfileModal() { document.getElementById('profileModal').classList.remove('show'); }
-    function openSupportModal() { document.getElementById('supportModal').classList.add('show'); }
-    function closeSupportModal() { document.getElementById('supportModal').classList.remove('show'); }
-    function logout() { sessionStorage.clear(); window.location.href = 'index.html'; }
-    
-    function updateMotivationalQuote() {
-        const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
-        document.getElementById('motivational-quote').textContent = quote;
-    }
-    
-    function updateOperationClock() {
-        const startDate = new Date('2016-06-06T00:00:00');
-        const now = new Date();
-        const diff = now - startDate;
-        const seconds = Math.floor(diff / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        const months = Math.floor(days / 30.44);
-        const years = Math.floor(days / 365.25);
-        document.getElementById('op-seconds').textContent = (seconds % 60).toString().padStart(2, '0');
-        document.getElementById('op-minutes').textContent = (minutes % 60).toString().padStart(2, '0');
-        document.getElementById('op-hours').textContent = (hours % 24).toString().padStart(2, '0');
-        document.getElementById('op-days').textContent = (days % 30).toString().padStart(2, '0');
-        document.getElementById('op-months').textContent = months;
-        document.getElementById('op-years').textContent = years;
-    }
-
-    // Event Listeners
-    document.getElementById('profileModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeProfileModal(); });
-    document.getElementById('supportModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeSupportModal(); });
-    document.getElementById('passagemFilterModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePassagemFilterModal(); });
-
-    // Initial load
-    updateMotivationalQuote();
-    setInterval(updateOperationClock, 1000);
-    updateOperationClock();
-</script>
-</body>
-</html>
+                // Usando os nomes exatos das colunas da nova planilha
+                const nomeTecnico = r['NOME E SOBRENOME'] || '';
+                const numeroTrem = r['NÚMERO DO TREM'] || '';
+                const sistemaTrem = r['SISTEMAS'] || '';
+                
+                // Outros filtros com colunas atualizadas
+                if (grupo && r['GRUPO'] !== grupo) return false;
+                if (trem && !numeroTrem.toLowerCase().includes(trem)) return false;
+                if (sistema && !sistemaTrem.toLowerCase().includes(sistema)) return false;
+                if (tecnico && !nomeTecnico.toLowerCase().includes(tecnico)) return false;
+                if (status) {
+                    const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
+                    if (!statusRegistro.includes(status.toUpperCase())) return false
