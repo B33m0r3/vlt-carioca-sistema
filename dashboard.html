@@ -820,7 +820,7 @@
 
 <script>
     const motivationalQuotes = [ "💪 Excelência é a jornada, não o destino!", "🚆 Segurança em primeiro lugar, sempre!", "🛡️ Proteção é responsabilidade de todos!", "⚡ Somos o coração ferroviário do Rio!", "🎯 Precisão e dedicação em cada operação!", "👥 Juntos fazemos a diferença!", "🌟 VLT Carioca: Mobilidade com segurança!", "✅ Qualidade: nosso compromisso!", "🚀 Inovação todos os dias!", "❤️ Paixão pelo que fazemos!", "🏆 Somos os melhores ferroviários!", "🔧 Manutenção impecável, sempre!", "⭐ Faça sua parte, sempre com cuidado!", "💯 100% de comprometimento!", "🎖️ Orgulho de servir a população!", "🚇 Conectando vidas, cidades e sonhos!", "🛡️ Cada detalhe conta para a segurança!", "👨‍🔧 Profissionalismo em tudo!", "🌉 VLT: Liderança em mobilidade urbana!", "💡 Ideias para melhorar a cada dia!" ];
-    const REGISTRO_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1131259241&single=true&output=csv';
+    const REGISTRO_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=195449004&single=true&output=csv';
     const USUARIOS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI602SZCvv3Vljbau78ZXFxNxUVQATWF1aefTd0rxh6zXpmhV9nDjmpimnDO5vkHLKpWZl82Kw4Gu2/pub?gid=1605075317&single=true&output=csv';
     const linhasData = {
         1: { cor: 'Azul', trajeto: 'Santos Dumont ✈️ → ... → Terminal Gentileza', estacoes: { 'SDU': 'Santos Dumont', 'ACM': 'Antônio Carlos (MAM)', 'CIN': 'Cinelândia', 'CAR': 'Carioca', 'STS': 'Sete de Setembro', 'CAN': 'Candelária', 'SAB': 'São Bento', 'PAM': 'Parada dos Museus', 'PNV': 'Parada dos Navios (Valongo)', 'UAR': 'Utopia (AquaRio)', 'CDS': 'Cidade do Samba (Tia Ciata)', 'SCR': 'Santo Cristo', 'GAM': 'Gamboa', 'PER': 'Providência', 'PRO': 'Providência', 'EQU': 'Equador', 'ROD': 'Rodoviária', 'TIG': 'Terminal Gentileza' } },
@@ -1178,95 +1178,91 @@
         }
     }
 
-    function processPassagemFilters() {
-        const dataSelecionada = document.getElementById('passagemData').value;
-        const grupo = document.getElementById('passagemGrupo').value;
-        const trem = document.getElementById('passagemTrem').value.toLowerCase();
-        const sistema = document.getElementById('passagemSistema').value.toLowerCase();
-        const tecnico = document.getElementById('passagemTecnico').value.toLowerCase();
-        const status = document.getElementById('passagemStatus').value;
-        
-        console.log('=== DEBUG FILTRO DATA PASSAGEM ===');
-        console.log('Data selecionada no filtro:', dataSelecionada);
-        
-        filteredPassagemData = allRegistros.filter(r => {
-            try {
-                // ⚠️ COLUNA ATUALIZADA: 'Carimbo de data/hora' em vez de 'DATA'
-                const dataRegistro = r['Carimbo de data/hora'] || r['DATA'];
+function processPassagemFilters() {
+    const dataSelecionada = document.getElementById('passagemData').value;
+    const grupo = document.getElementById('passagemGrupo').value;
+    const trem = document.getElementById('passagemTrem').value.toLowerCase();
+    const sistema = document.getElementById('passagemSistema').value.toLowerCase();
+    const tecnico = document.getElementById('passagemTecnico').value.toLowerCase();
+    const status = document.getElementById('passagemStatus').value;
+    
+    console.log('=== DEBUG FILTRO DATA PASSAGEM ===');
+    console.log('Data selecionada no filtro:', dataSelecionada);
+    
+    filteredPassagemData = allRegistros.filter(r => {
+        try {
+            // Usando os nomes exatos das colunas da nova planilha
+            const dataRegistro = r['Carimbo de data/hora'] || '';
+            
+            // FILTRO DE DATA CORRIGIDO
+            if (dataSelecionada) {
+                const partsFiltro = dataSelecionada.split('-');
+                const dataFiltroFormatada = `${partsFiltro[2]}/${partsFiltro[1]}/${partsFiltro[0]}`;
                 
-                // FILTRO DE DATA CORRIGIDO
-                if (dataSelecionada) {
-                    const partsFiltro = dataSelecionada.split('-');
-                    const dataFiltroFormatada = `${partsFiltro[2]}/${partsFiltro[1]}/${partsFiltro[0]}`;
-                    
-                    const dataRegistroFormatada = dataRegistro.split(' ')[0];
-                    
-                    console.log('Data do registro:', dataRegistroFormatada);
-                    console.log('Data do filtro:', dataFiltroFormatada);
-                    
-                    if (dataRegistroFormatada !== dataFiltroFormatada) {
-                        return false;
-                    }
+                const dataRegistroFormatada = dataRegistro.split(' ')[0];
+                
+                console.log('Data do registro:', dataRegistroFormatada);
+                console.log('Data do filtro:', dataFiltroFormatada);
+                
+                if (dataRegistroFormatada !== dataFiltroFormatada) {
+                    return false;
                 }
-                
-                // ⚠️ COLUNA ATUALIZADA: 'NOME E SOBRENOME' em vez de 'NOME'
-                const nomeTecnico = r['NOME E SOBRENOME'] || r['NOME'];
-                
-                // ⚠️ COLUNA ATUALIZADA: 'NÚMERO DO TREM:' em vez de 'NMERO DO TREM:'
-                const numeroTrem = r['NÚMERO DO TREM:'] || r['NMERO DO TREM:'];
-                
-                // ⚠️ COLUNA ATUALIZADA: 'SISTEMAS' em vez de 'SISTEMA'
-                const sistemaTrem = r['SISTEMAS'] || r['SISTEMA'];
-                
-                // Outros filtros com colunas atualizadas
-                if (grupo && r['GRUPO'] !== grupo) return false;
-                if (trem && !numeroTrem.toLowerCase().includes(trem)) return false;
-                if (sistema && !sistemaTrem.toLowerCase().includes(sistema)) return false;
-                if (tecnico && !nomeTecnico.toLowerCase().includes(tecnico)) return false;
-                if (status) {
-                    const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
-                    if (!statusRegistro.includes(status.toUpperCase())) return false;
-                }
-                return true;
-            } catch (e) { 
-                console.log('❌ Erro no filtro:', e, r);
-                return false; 
             }
-        });
-        
-        console.log(`=== RESULTADO PASSAGEM ===`);
-        console.log(`Filtros aplicados - Data: ${dataSelecionada}, Encontrados: ${filteredPassagemData.length} registros`);
-        
-        renderPassagemTable();
-    }
-
-    function renderPassagemTable() {
-        const table = document.getElementById('passagem-table');
-        if (filteredPassagemData.length === 0) {
-            table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-        } else {
-            table.innerHTML = filteredPassagemData.map(r => {
-                // ⚠️ COLUNAS ATUALIZADAS
-                const data = r['Carimbo de data/hora'] || r['DATA'];
-                const nome = r['NOME E SOBRENOME'] || r['NOME'];
-                const trem = r['NÚMERO DO TREM:'] || r['NMERO DO TREM:'];
-                const sistema = r['SISTEMAS'] || r['SISTEMA'];
-                const descricao = r['DESCRIÇÃO DETALHADA'];
-                const status = r['STATUS ATUAL DO TREM'] || 'NÃO INFORMADO';
-                
-                return `
-                    <tr>
-                        <td>${data}</td>
-                        <td>${nome}</td>
-                        <td>${trem}</td>
-                        <td>${sistema}</td>
-                        <td>${descricao}</td>
-                        <td>${status}</td>
-                    </tr>
-                `;
-            }).join('');
+            
+            // Usando os nomes exatos das colunas da nova planilha
+            const nomeTecnico = r['NOME E SOBRENOME'] || '';
+            const numeroTrem = r['NÚMERO DO TREM'] || '';
+            const sistemaTrem = r['SISTEMAS'] || '';
+            
+            // Outros filtros com colunas atualizadas
+            if (grupo && r['GRUPO'] !== grupo) return false;
+            if (trem && !numeroTrem.toLowerCase().includes(trem)) return false;
+            if (sistema && !sistemaTrem.toLowerCase().includes(sistema)) return false;
+            if (tecnico && !nomeTecnico.toLowerCase().includes(tecnico)) return false;
+            if (status) {
+                const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
+                if (!statusRegistro.includes(status.toUpperCase())) return false;
+            }
+            return true;
+        } catch (e) { 
+            console.log('❌ Erro no filtro:', e, r);
+            return false; 
         }
+    });
+    
+    console.log(`=== RESULTADO PASSAGEM ===`);
+    console.log(`Filtros aplicados - Data: ${dataSelecionada}, Encontrados: ${filteredPassagemData.length} registros`);
+    
+    renderPassagemTable();
+}
+
+function renderPassagemTable() {
+    const table = document.getElementById('passagem-table');
+    if (filteredPassagemData.length === 0) {
+        table.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
+    } else {
+        table.innerHTML = filteredPassagemData.map(r => {
+            // Usando os nomes exatos das colunas da nova planilha
+            const data = r['Carimbo de data/hora'] || '';
+            const nome = r['NOME E SOBRENOME'] || '';
+            const trem = r['NÚMERO DO TREM'] || '';
+            const sistema = r['SISTEMAS'] || '';
+            const descricao = r['DESCRIÇÃO DETALHADA'] || '';
+            const status = r['STATUS ATUAL DO TREM'] || 'NÃO INFORMADO';
+            
+            return `
+                <tr>
+                    <td>${data}</td>
+                    <td>${nome}</td>
+                    <td>${trem}</td>
+                    <td>${sistema}</td>
+                    <td>${descricao}</td>
+                    <td>${status}</td>
+                </tr>
+            `;
+        }).join('');
     }
+}
 
     function clearPassagemFilters() {
         document.getElementById('passagemData').value = '';
@@ -1301,101 +1297,101 @@
         }
     }
 
-    function processFilters() {
-        const dataInicio = document.getElementById('filterDataInicio').value;
-        const dataFim = document.getElementById('filterDataFim').value;
-        const trem = document.getElementById('filterTrem').value.toLowerCase();
-        const sistema = document.getElementById('filterSistema').value.toLowerCase();
-        const equipe = document.getElementById('filterEquipe').value.toUpperCase();
-        const tecnico = document.getElementById('filterTecnico').value.toLowerCase();
-        const ios = document.getElementById('filterIOS').value.toLowerCase();
-        const status = document.getElementById('filterStatus').value;
-        
-        console.log('=== DEBUG FILTRO DATA RELATÓRIOS ===');
-        console.log('Data início:', dataInicio, 'Data fim:', dataFim);
-        
-        filteredReportData = allRegistros.filter(r => {
-            try {
-                // ⚠️ COLUNA ATUALIZADA: 'Carimbo de data/hora'
-                const dataRegistro = r['Carimbo de data/hora'] || r['DATA'];
+function processFilters() {
+    const dataInicio = document.getElementById('filterDataInicio').value;
+    const dataFim = document.getElementById('filterDataFim').value;
+    const trem = document.getElementById('filterTrem').value.toLowerCase();
+    const sistema = document.getElementById('filterSistema').value.toLowerCase();
+    const equipe = document.getElementById('filterEquipe').value.toUpperCase();
+    const tecnico = document.getElementById('filterTecnico').value.toLowerCase();
+    const ios = document.getElementById('filterIOS').value.toLowerCase();
+    const status = document.getElementById('filterStatus').value;
+    
+    console.log('=== DEBUG FILTRO DATA RELATÓRIOS ===');
+    console.log('Data início:', dataInicio, 'Data fim:', dataFim);
+    
+    filteredReportData = allRegistros.filter(r => {
+        try {
+            // Usando os nomes exatos das colunas da nova planilha
+            const dataRegistro = r['Carimbo de data/hora'] || '';
+            
+            // FILTRO DE DATA CORRIGIDO
+            if (dataInicio || dataFim) {
+                const dataRegistroFormatada = dataRegistro.split(' ')[0];
+                const partsRegistro = dataRegistroFormatada.split('/');
+                const dataRegistroObj = new Date(partsRegistro[2], partsRegistro[1] - 1, partsRegistro[0]);
                 
-                // FILTRO DE DATA CORRIGIDO
-                if (dataInicio || dataFim) {
-                    const dataRegistroFormatada = dataRegistro.split(' ')[0];
-                    const partsRegistro = dataRegistroFormatada.split('/');
-                    const dataRegistroObj = new Date(partsRegistro[2], partsRegistro[1] - 1, partsRegistro[0]);
-                    
-                    if (dataInicio) {
-                        const dataInicioObj = new Date(dataInicio);
-                        if (dataRegistroObj < dataInicioObj) return false;
-                    }
-                    
-                    if (dataFim) {
-                        const dataFimObj = new Date(dataFim);
-                        dataFimObj.setHours(23, 59, 59, 999);
-                        if (dataRegistroObj > dataFimObj) return false;
-                    }
+                if (dataInicio) {
+                    const dataInicioObj = new Date(dataInicio);
+                    if (dataRegistroObj < dataInicioObj) return false;
                 }
                 
-                // ⚠️ COLUNAS ATUALIZADAS
-                const nomeTecnico = r['NOME E SOBRENOME'] || r['NOME'];
-                const numeroTrem = r['NÚMERO DO TREM:'] || r['NMERO DO TREM:'];
-                const sistemaTrem = r['SISTEMAS'] || r['SISTEMA'];
-                const codigoIOS = r['CÓDIGO IOS DA FALHA'];
-                
-                // Outros filtros com colunas atualizadas
-                if (trem && !numeroTrem.toLowerCase().includes(trem)) return false;
-                if (sistema && !sistemaTrem.toLowerCase().includes(sistema)) return false;
-                if (equipe && r['GRUPO'] !== equipe) return false;
-                if (tecnico && !nomeTecnico.toLowerCase().includes(tecnico)) return false;
-                if (ios && !codigoIOS.toLowerCase().includes(ios)) return false;
-                if (status) {
-                    const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
-                    if (!statusRegistro.includes(status.toUpperCase())) return false;
+                if (dataFim) {
+                    const dataFimObj = new Date(dataFim);
+                    dataFimObj.setHours(23, 59, 59, 999);
+                    if (dataRegistroObj > dataFimObj) return false;
                 }
-                return true;
-            } catch (e) { 
-                console.log('❌ Erro no filtro relatórios:', e, r);
-                return false; 
             }
-        });
-        
-        console.log(`=== RESULTADO RELATÓRIOS ===`);
-        console.log(`Filtros aplicados - Encontrados: ${filteredReportData.length} registros`);
-        renderReportTable();
-    }
-
-    function renderReportTable() {
-        const table = document.getElementById('relatorio-table');
-        if (filteredReportData.length === 0) {
-            table.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-            document.getElementById('download-buttons').style.display = 'none';
-        } else {
-            table.innerHTML = filteredReportData.map(r => {
-                // ⚠️ COLUNAS ATUALIZADAS
-                const data = r['Carimbo de data/hora'] || r['DATA'];
-                const nome = r['NOME E SOBRENOME'] || r['NOME'];
-                const trem = r['NÚMERO DO TREM:'] || r['NMERO DO TREM:'];
-                const sistema = r['SISTEMAS'] || r['SISTEMA'];
-                const ios = r['CÓDIGO IOS DA FALHA'];
-                const descricao = r['DESCRIÇÃO DETALHADA'];
-                const status = r['STATUS ATUAL DO TREM'] || 'NÃO INFORMADO';
-                
-                return `
-                    <tr>
-                        <td>${data}</td>
-                        <td>${nome}</td>
-                        <td>${trem}</td>
-                        <td>${sistema}</td>
-                        <td>${ios}</td>
-                        <td>${descricao}</td>
-                        <td>${status}</td>
-                    </tr>
-                `;
-            }).join('');
-            document.getElementById('download-buttons').style.display = 'flex';
+            
+            // Usando os nomes exatos das colunas da nova planilha
+            const nomeTecnico = r['NOME E SOBRENOME'] || '';
+            const numeroTrem = r['NÚMERO DO TREM'] || '';
+            const sistemaTrem = r['SISTEMAS'] || '';
+            const codigoIOS = r['CÓDIGO IOS DA FALHA'] || '';
+            
+            // Outros filtros com colunas atualizadas
+            if (trem && !numeroTrem.toLowerCase().includes(trem)) return false;
+            if (sistema && !sistemaTrem.toLowerCase().includes(sistema)) return false;
+            if (equipe && r['GRUPO'] !== equipe) return false;
+            if (tecnico && !nomeTecnico.toLowerCase().includes(tecnico)) return false;
+            if (ios && !codigoIOS.toLowerCase().includes(ios)) return false;
+            if (status) {
+                const statusRegistro = (r['STATUS ATUAL DO TREM'] || '').toUpperCase();
+                if (!statusRegistro.includes(status.toUpperCase())) return false;
+            }
+            return true;
+        } catch (e) { 
+            console.log('❌ Erro no filtro relatórios:', e, r);
+            return false; 
         }
+    });
+    
+    console.log(`=== RESULTADO RELATÓRIOS ===`);
+    console.log(`Filtros aplicados - Encontrados: ${filteredReportData.length} registros`);
+    renderReportTable();
+}
+
+function renderReportTable() {
+    const table = document.getElementById('relatorio-table');
+    if (filteredReportData.length === 0) {
+        table.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
+        document.getElementById('download-buttons').style.display = 'none';
+    } else {
+        table.innerHTML = filteredReportData.map(r => {
+            // Usando os nomes exatos das colunas da nova planilha
+            const data = r['Carimbo de data/hora'] || '';
+            const nome = r['NOME E SOBRENOME'] || '';
+            const trem = r['NÚMERO DO TREM'] || '';
+            const sistema = r['SISTEMAS'] || '';
+            const ios = r['CÓDIGO IOS DA FALHA'] || '';
+            const descricao = r['DESCRIÇÃO DETALHADA'] || '';
+            const status = r['STATUS ATUAL DO TREM'] || 'NÃO INFORMADO';
+            
+            return `
+                <tr>
+                    <td>${data}</td>
+                    <td>${nome}</td>
+                    <td>${trem}</td>
+                    <td>${sistema}</td>
+                    <td>${ios}</td>
+                    <td>${descricao}</td>
+                    <td>${status}</td>
+                </tr>
+            `;
+        }).join('');
+        document.getElementById('download-buttons').style.display = 'flex';
     }
+}
 
     function clearFilters() {
         document.getElementById('filterDataInicio').value = '';
