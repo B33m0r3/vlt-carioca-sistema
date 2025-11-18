@@ -598,7 +598,7 @@
                             </table>
                         </div>
                     </div>
-                    <!-- Novo Registro -->
+                    <!-- Novo Registro - CORRIGIDO: Formulário abre direto -->
                     <div class="page" id="page-novo_registro">
                         <div class="page-header">
                             <h1>➕ Novo Registro</h1>
@@ -612,49 +612,14 @@
                                 <i class="fas fa-camera"></i> Capturar Tela
                             </button>
                         </div>
-                        <div class="tabs-container">
-                            <button class="tab-btn active" onclick="switchTab('novo_registro', 'form', event)">Formulário</button>
-                            <button class="tab-btn" onclick="switchTab('novo_registro', 'data', event)">Dados</button>
-                        </div>
-<div class="tab-content active" id="novo_registro-form">
-    <div class="form-container">
-        <iframe 
-            src="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?embedded=true" 
-            class="form-iframe"
-            allow="clipboard-read; clipboard-write"
-            allowfullscreen
-            loading="lazy"
-        ></iframe>
-    </div>
-</div>
-                        <div class="tab-content" id="novo_registro-data">
-                            <div class="filter-container">
-                                <input type="date" id="novoRegistroData" class="filter-input" placeholder="Data">
-                                <input type="text" id="novoRegistroTecnico" class="filter-input" placeholder="Técnico">
-                                <input type="text" id="novoRegistroEquipamento" class="filter-input" placeholder="Equipamento">
-                                <button class="filter-btn" onclick="applyNovoRegistroFilters()">
-                                    <i class="fas fa-filter"></i> Aplicar Filtros
-                                </button>
-                                <button class="filter-btn" onclick="clearNovoRegistroFilters()">
-                                    <i class="fas fa-times"></i> Limpar
-                                </button>
-                            </div>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Data</th>
-                                            <th>Técnico</th>
-                                            <th>Equipamento</th>
-                                            <th>Descrição</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="novo_registro-table">
-                                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para carregar os dados.</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="form-container">
+                            <iframe 
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSdz056J8dsQMPXV6__U2B-VOxQEaNF34bwyaRgFVlcCKOLZ_Q/viewform?usp=embedded_form_link" 
+                                class="form-iframe"
+                                allow="clipboard-read; clipboard-write"
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
                         </div>
                     </div>
                     <!-- Relatórios -->
@@ -753,7 +718,7 @@
                             </table>
                         </div>
                     </div>
-                    <!-- Laboratório -->
+                    <!-- Laboratório - CORRIGIDO: Formulário abre direto -->
                     <div class="page" id="page-laboratorio">
                         <div class="page-header">
                             <h1>🔬 Laboratório</h1>
@@ -767,53 +732,17 @@
                                 <i class="fas fa-camera"></i> Capturar Tela
                             </button>
                         </div>
-                        <div class="tabs-container">
-                            <button class="tab-btn active" onclick="switchTab('laboratorio', 'form', event)">Formulário</button>
-                            <button class="tab-btn" onclick="switchTab('laboratorio', 'data', event)">Dados</button>
-                        </div>
-<div class="tab-content active" id="laboratorio-form">
-    <div class="form-container">
-        <iframe 
-            src="https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform?embedded=true" 
-            class="form-iframe"
-            allow="clipboard-read; clipboard-write"
-            allowfullscreen
-            loading="lazy"
-        ></iframe>
-    </div>
-</div>
-                        </div>
-                        <div class="tab-content" id="laboratorio-data">
-                            <div class="filter-container">
-                                <input type="date" id="laboratorioData" class="filter-input" placeholder="Data">
-                                <input type="text" id="laboratorioTecnico" class="filter-input" placeholder="Técnico">
-                                <input type="text" id="laboratorioEquipamento" class="filter-input" placeholder="Equipamento">
-                                <button class="filter-btn" onclick="applyLaboratorioFilters()">
-                                    <i class="fas fa-filter"></i> Aplicar Filtros
-                                </button>
-                                <button class="filter-btn" onclick="clearLaboratorioFilters()">
-                                    <i class="fas fa-times"></i> Limpar
-                                </button>
-                            </div>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Data</th>
-                                            <th>Técnico</th>
-                                            <th>Equipamento</th>
-                                            <th>Descrição</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="laboratorio-table">
-                                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para carregar os dados.</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="form-container">
+                            <iframe 
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSeX0zKXBJXX3SyCkJGHufqbEDlTnpRigdZq0TmBqdLmC3woGQ/viewform?usp=embedded_form_link" 
+                                class="form-iframe"
+                                allow="clipboard-read; clipboard-write"
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
                         </div>
                     </div>
-                    <!-- EVA -->
+                    <!-- EVA - CORRIGIDO: Formulário abre direto -->
                     <div class="page" id="page-eva">
                         <div class="page-header">
                             <h1>🤖 EVA</h1>
@@ -827,52 +756,17 @@
                                 <i class="fas fa-camera"></i> Capturar Tela
                             </button>
                         </div>
-                        <div class="tabs-container">
-                            <button class="tab-btn active" onclick="switchTab('eva', 'form', event)">Formulário</button>
-                            <button class="tab-btn" onclick="switchTab('eva', 'data', event)">Dados</button>
-                        </div>
-<div class="tab-content active" id="eva-form">
-    <div class="form-container">
-        <iframe 
-            src="https://docs.google.com/forms/d/e/1FAIpQLSeixWIcnMdFmqHnxwO-vb2F86AKW6g6KRqDwMsYTk3Baj6l8w/viewform?embedded=true" 
-            class="form-iframe"
-            allow="clipboard-read; clipboard-write"
-            allowfullscreen
-            loading="lazy"
-        ></iframe>
-    </div>
-</div>
-                        <div class="tab-content" id="eva-data">
-                            <div class="filter-container">
-                                <input type="date" id="evaData" class="filter-input" placeholder="Data">
-                                <input type="text" id="evaTecnico" class="filter-input" placeholder="Técnico">
-                                <input type="text" id="evaEquipamento" class="filter-input" placeholder="Equipamento">
-                                <button class="filter-btn" onclick="applyEvaFilters()">
-                                    <i class="fas fa-filter"></i> Aplicar Filtros
-                                </button>
-                                <button class="filter-btn" onclick="clearEvaFilters()">
-                                    <i class="fas fa-times"></i> Limpar
-                                </button>
-                            </div>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Data</th>
-                                            <th>Técnico</th>
-                                            <th>Equipamento</th>
-                                            <th>Descrição</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="eva-table">
-                                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para carregar os dados.</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="form-container">
+                            <iframe 
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSeixWIcnMdFmqHnxwO-vb2F86AKW6g6KRqDwMsYTk3Baj6l8w/viewform?usp=embedded_form_link" 
+                                class="form-iframe"
+                                allow="clipboard-read; clipboard-write"
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
                         </div>
                     </div>
-                    <!-- Refrigeração -->
+                    <!-- Refrigeração - CORRIGIDO: Formulário abre direto -->
                     <div class="page" id="page-refrigeracao">
                         <div class="page-header">
                             <h1>❄️ Refrigeração</h1>
@@ -886,49 +780,14 @@
                                 <i class="fas fa-camera"></i> Capturar Tela
                             </button>
                         </div>
-                        <div class="tabs-container">
-                            <button class="tab-btn active" onclick="switchTab('refrigeracao', 'form', event)">Formulário</button>
-                            <button class="tab-btn" onclick="switchTab('refrigeracao', 'data', event)">Dados</button>
-                        </div>
-<div class="tab-content active" id="refrigeracao-form">
-    <div class="form-container">
-        <iframe 
-            src="https://docs.google.com/forms/d/e/1FAIpQLSekQ4e_rCSuzitRhtpjq48VR2ttobQvvRr--e0qcTH5PU9azQ/viewform?embedded=true" 
-            class="form-iframe"
-            allow="clipboard-read; clipboard-write"
-            allowfullscreen
-            loading="lazy"
-        ></iframe>
-    </div>
-</div>
-                        <div class="tab-content" id="refrigeracao-data">
-                            <div class="filter-container">
-                                <input type="date" id="refrigeracaoData" class="filter-input" placeholder="Data">
-                                <input type="text" id="refrigeracaoTecnico" class="filter-input" placeholder="Técnico">
-                                <input type="text" id="refrigeracaoEquipamento" class="filter-input" placeholder="Equipamento">
-                                <button class="filter-btn" onclick="applyRefrigeracaoFilters()">
-                                    <i class="fas fa-filter"></i> Aplicar Filtros
-                                </button>
-                                <button class="filter-btn" onclick="clearRefrigeracaoFilters()">
-                                    <i class="fas fa-times"></i> Limpar
-                                </button>
-                            </div>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Data</th>
-                                            <th>Técnico</th>
-                                            <th>Equipamento</th>
-                                            <th>Descrição</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="refrigeracao-table">
-                                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Clique em "Aplicar Filtros" para carregar os dados.</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="form-container">
+                            <iframe 
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSekQ4e_rCSuzitRhtpjq48VR2ttobQvvRr--e0qcTH5PU9azQ/viewform?usp=embedded_form_link" 
+                                class="form-iframe"
+                                allow="clipboard-read; clipboard-write"
+                                allowfullscreen
+                                loading="lazy"
+                            ></iframe>
                         </div>
                     </div>
                     <!-- Rastreabilidade -->
@@ -1095,7 +954,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Suporte - CORRIGIDO -->
+    <!-- Modal Suporte - CORRIGIDO (com tags de fechamento) -->
     <div id="supportModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeSupportModal()">✕</button>
@@ -1329,7 +1188,7 @@
                 document.getElementById('perfil-tipo').textContent = currentUser.tipo || 'USUÁRIO';
             });
     }
-    // FUNÇÃO PRINCIPAL PARA MOSTRAR PÁGINAS - CORRIGIDA COM CARREGAMENTO AUTOMÁTICO
+    // FUNÇÃO PRINCIPAL PARA MOSTRAR PÁGINAS - CORRIGIDA PARA CARREGAR DADOS
     function showPage(pageName, event = null) {
         console.log("🔄 Navegando para página:", pageName);
         // Esconder todas as páginas
@@ -1372,7 +1231,7 @@
         } else {
             screenshotBtn.style.display = 'none'; 
         }
-        // Carregar dados específicos da página - AGORA TODAS AS PÁGINAS CARREGAM CORRETAMENTE
+        // Carregar dados específicos da página
         if (pageName === 'passagem') {
             document.getElementById('passagem-filters').style.display = 'flex';
             loadPassagemData();
@@ -1381,45 +1240,20 @@
         }
         if (pageName === 'usuarios') loadUsuarios();
         if (pageName === 'documentacao') loadDocumentacao();
+        if (pageName === 'rastreabilidade') loadRastreabilidadeData();
+        
+        // Carregar dados das novas páginas sem tabs
         if (pageName === 'laboratorio') {
-            loadLaboratorioData();
-            // Garantir que a aba de formulário esteja ativa
-            document.querySelectorAll('#page-laboratorio .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('#page-laboratorio .tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector('#page-laboratorio .tab-btn:first-child').classList.add('active');
-            document.querySelector('#page-laboratorio .tab-content:first-child').classList.add('active');
+            // Não precisa carregar dados aqui, o formulário já abre direto
         }
         if (pageName === 'eva') {
-            loadEvaData();
-            // Garantir que a aba de formulário esteja ativa
-            document.querySelectorAll('#page-eva .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('#page-eva .tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector('#page-eva .tab-btn:first-child').classList.add('active');
-            document.querySelector('#page-eva .tab-content:first-child').classList.add('active');
+            // Não precisa carregar dados aqui, o formulário já abre direto
         }
         if (pageName === 'refrigeracao') {
-            loadRefrigeracaoData();
-            // Garantir que a aba de formulário esteja ativa
-            document.querySelectorAll('#page-refrigeracao .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('#page-refrigeracao .tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector('#page-refrigeracao .tab-btn:first-child').classList.add('active');
-            document.querySelector('#page-refrigeracao .tab-content:first-child').classList.add('active');
-        }
-        if (pageName === 'rastreabilidade') {
-            loadRastreabilidadeData();
-            // Garantir que a aba de formulário esteja ativa
-            document.querySelectorAll('#page-rastreabilidade .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('#page-rastreabilidade .tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector('#page-rastreabilidade .tab-btn:first-child').classList.add('active');
-            document.querySelector('#page-rastreabilidade .tab-content:first-child').classList.add('active');
+            // Não precisa carregar dados aqui, o formulário já abre direto
         }
         if (pageName === 'novo_registro') {
-            loadNovoRegistroData();
-            // Garantir que a aba de formulário esteja ativa
-            document.querySelectorAll('#page-novo_registro .tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('#page-novo_registro .tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector('#page-novo_registro .tab-btn:first-child').classList.add('active');
-            document.querySelector('#page-novo_registro .tab-content:first-child').classList.add('active');
+            // Não precisa carregar dados aqui, o formulário já abre direto
         }
     }
     // FUNÇÃO PARA CARREGAR DOCUMENTAÇÃO
@@ -1613,253 +1447,13 @@
             event.currentTarget.classList.add('active');
         }
     }
-    // FUNÇÃO GENÉRICA PARA FILTROS
-    function applyGenericFilter(pageName, csvUrl) {
-        const dataId = pageName + 'Data';
-        const tecnicoId = pageName + 'Tecnico';
-        const equipamentoId = pageName + 'Equipamento';
-        const tableId = pageName + '-table';
-        let dataToFilter = [];
-        if (pageName === 'laboratorio') dataToFilter = laboratorioData;
-        if (pageName === 'eva') dataToFilter = evaData;
-        if (pageName === 'refrigeracao') dataToFilter = refrigeracaoData;
-        if (pageName === 'rastreabilidade') dataToFilter = rastreabilidadeData;
-        if (pageName === 'novo_registro') dataToFilter = novoRegistroData;
-        if (dataToFilter.length === 0) {
-            fetch(csvUrl).then(r => r.text()).then(csv => {
-                const parsedData = parseCSV(csv);
-                if (pageName === 'laboratorio') laboratorioData = parsedData;
-                if (pageName === 'eva') evaData = parsedData;
-                if (pageName === 'refrigeracao') refrigeracaoData = parsedData;
-                if (pageName === 'rastreabilidade') rastreabilidadeData = parsedData;
-                if (pageName === 'novo_registro') novoRegistroData = parsedData;
-                processFilter();
-            }).catch(console.error);
-        } else {
-            processFilter();
-        }
-        function processFilter() {
-            const data = document.getElementById(dataId).value;
-            const tecnico = document.getElementById(tecnicoId).value.toLowerCase();
-            const equipamento = document.getElementById(equipamentoId).value.toLowerCase();
-            const dataKey = 'DATA';
-            const tecnicoKey = 'NOME E SOBRENOME';
-            const equipamentoKey = 'EQUIPAMENTO';
-            let filteredData = [];
-            if (pageName === 'laboratorio') {
-                filteredData = laboratorioData.filter(r => {
-                    if (data && r[dataKey] !== data) return false;
-                    if (tecnico && !r[tecnicoKey].toLowerCase().includes(tecnico)) return false;
-                    if (equipamento && !r[equipamentoKey].toLowerCase().includes(equipamento)) return false;
-                    return true;
-                });
-                renderLaboratorioTable(filteredData);
-            } else if (pageName === 'eva') {
-                filteredData = evaData.filter(r => {
-                    if (data && r[dataKey] !== data) return false;
-                    if (tecnico && !r[tecnicoKey].toLowerCase().includes(tecnico)) return false;
-                    if (equipamento && !r[equipamentoKey].toLowerCase().includes(equipamento)) return false;
-                    return true;
-                });
-                renderEvaTable(filteredData);
-            } else if (pageName === 'refrigeracao') {
-                filteredData = refrigeracaoData.filter(r => {
-                    if (data && r[dataKey] !== data) return false;
-                    if (tecnico && !r[tecnicoKey].toLowerCase().includes(tecnico)) return false;
-                    if (equipamento && !r[equipamentoKey].toLowerCase().includes(equipamento)) return false;
-                    return true;
-                });
-                renderRefrigeracaoTable(filteredData);
-            } else if (pageName === 'rastreabilidade') {
-                filteredData = rastreabilidadeData.filter(r => {
-                    if (data && r[dataKey] !== data) return false;
-                    if (tecnico && !r[tecnicoKey].toLowerCase().includes(tecnico)) return false;
-                    if (equipamento && !r[equipamentoKey].toLowerCase().includes(equipamento)) return false;
-                    return true;
-                });
-                renderRastreabilidadeTable(filteredData);
-            } else if (pageName === 'novo_registro') {
-                filteredData = novoRegistroData.filter(r => {
-                    if (data && r[dataKey] !== data) return false;
-                    if (tecnico && !r[tecnicoKey].toLowerCase().includes(tecnico)) return false;
-                    if (equipamento && !r[equipamentoKey].toLowerCase().includes(equipamento)) return false;
-                    return true;
-                });
-                renderNovoRegistroTable(filteredData);
-            }
-        }
+    // FUNÇÕES PARA MODAIS - ADICIONADAS (faltavam no seu código)
+    function openSupportModal() {
+        document.getElementById('supportModal').classList.add('show');
     }
-    // FUNÇÕES DE RENDERIZAÇÃO DE TABELAS
-    function renderLaboratorioTable(data) {
-        const table = document.getElementById('laboratorio-table');
-        if (data.length === 0) {
-            table.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-        } else {
-            table.innerHTML = data.map(r => {
-                return `
-                    <tr>
-                        <td>${r['DATA'] || ''}</td>
-                        <td>${r['NOME E SOBRENOME'] || ''}</td>
-                        <td>${r['EQUIPAMENTO'] || ''}</td>
-                        <td>${r['DESCRIÇÃO'] || ''}</td>
-                        <td>${r['STATUS'] || ''}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-    }
-    function renderEvaTable(data) {
-        const table = document.getElementById('eva-table');
-        if (data.length === 0) {
-            table.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-        } else {
-            table.innerHTML = data.map(r => {
-                return `
-                    <tr>
-                        <td>${r['DATA'] || ''}</td>
-                        <td>${r['NOME E SOBRENOME'] || ''}</td>
-                        <td>${r['EQUIPAMENTO'] || ''}</td>
-                        <td>${r['DESCRIÇÃO'] || ''}</td>
-                        <td>${r['STATUS'] || ''}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-    }
-    function renderRefrigeracaoTable(data) {
-        const table = document.getElementById('refrigeracao-table');
-        if (data.length === 0) {
-            table.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-        } else {
-            table.innerHTML = data.map(r => {
-                return `
-                    <tr>
-                        <td>${r['DATA'] || ''}</td>
-                        <td>${r['NOME E SOBRENOME'] || ''}</td>
-                        <td>${r['EQUIPAMENTO'] || ''}</td>
-                        <td>${r['DESCRIÇÃO'] || ''}</td>
-                        <td>${r['STATUS'] || ''}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-    }
-    function renderRastreabilidadeTable(data) {
-        const table = document.getElementById('rastreabilidade-table');
-        if (data.length === 0) {
-            table.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-        } else {
-            table.innerHTML = data.map(r => {
-                return `
-                    <tr>
-                        <td>${r['DATA'] || ''}</td>
-                        <td>${r['NOME E SOBRENOME'] || ''}</td>
-                        <td>${r['EQUIPAMENTO'] || ''}</td>
-                        <td>${r['DESCRIÇÃO'] || ''}</td>
-                        <td>${r['STATUS'] || ''}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-    }
-    function renderNovoRegistroTable(data) {
-        const table = document.getElementById('novo_registro-table');
-        if (data.length === 0) {
-            table.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;">Nenhum registro encontrado para os filtros aplicados.</td></tr>';
-        } else {
-            table.innerHTML = data.map(r => {
-                return `
-                    <tr>
-                        <td>${r['DATA'] || ''}</td>
-                        <td>${r['NOME E SOBRENOME'] || ''}</td>
-                        <td>${r['EQUIPAMENTO'] || ''}</td>
-                        <td>${r['DESCRIÇÃO'] || ''}</td>
-                        <td>${r['STATUS'] || ''}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-    }
-    // FUNÇÕES DE FILTROS ESPECÍFICOS
-    function applyLaboratorioFilters() {
-        applyGenericFilter('laboratorio', LABORATORIO_CSV);
-    }
-    function clearLaboratorioFilters() {
-        document.getElementById('laboratorioData').value = '';
-        document.getElementById('laboratorioTecnico').value = '';
-        document.getElementById('laboratorioEquipamento').value = '';
-        renderLaboratorioTable([]);
-    }
-    function loadLaboratorioData() {
-        if (laboratorioData.length === 0) {
-            fetch(LABORATORIO_CSV).then(r => r.text()).then(csv => {
-                laboratorioData = parseCSV(csv);
-            }).catch(console.error);
-        }
-    }
-    function applyEvaFilters() {
-        applyGenericFilter('eva', EVA_CSV);
-    }
-    function clearEvaFilters() {
-        document.getElementById('evaData').value = '';
-        document.getElementById('evaTecnico').value = '';
-        document.getElementById('evaEquipamento').value = '';
-        renderEvaTable([]);
-    }
-    function loadEvaData() {
-        if (evaData.length === 0) {
-            fetch(EVA_CSV).then(r => r.text()).then(csv => {
-                evaData = parseCSV(csv);
-            }).catch(console.error);
-        }
-    }
-    function applyRefrigeracaoFilters() {
-        applyGenericFilter('refrigeracao', REFRIGERACAO_CSV);
-    }
-    function clearRefrigeracaoFilters() {
-        document.getElementById('refrigeracaoData').value = '';
-        document.getElementById('refrigeracaoTecnico').value = '';
-        document.getElementById('refrigeracaoEquipamento').value = '';
-        renderRefrigeracaoTable([]);
-    }
-    function loadRefrigeracaoData() {
-        if (refrigeracaoData.length === 0) {
-            fetch(REFRIGERACAO_CSV).then(r => r.text()).then(csv => {
-                refrigeracaoData = parseCSV(csv);
-            }).catch(console.error);
-        }
-    }
-    function applyRastreabilidadeFilters() {
-        applyGenericFilter('rastreabilidade', RASTREABILIDADE_CSV);
-    }
-    function clearRastreabilidadeFilters() {
-        document.getElementById('rastreabilidadeData').value = '';
-        document.getElementById('rastreabilidadeTecnico').value = '';
-        document.getElementById('rastreabilidadeEquipamento').value = '';
-        renderRastreabilidadeTable([]);
-    }
-    function loadRastreabilidadeData() {
-        if (rastreabilidadeData.length === 0) {
-            fetch(RASTREABILIDADE_CSV).then(r => r.text()).then(csv => {
-                rastreabilidadeData = parseCSV(csv);
-            }).catch(console.error);
-        }
-    }
-    function applyNovoRegistroFilters() {
-        applyGenericFilter('novo_registro', REGISTRO_CSV);
-    }
-    function clearNovoRegistroFilters() {
-        document.getElementById('novoRegistroData').value = '';
-        document.getElementById('novoRegistroTecnico').value = '';
-        document.getElementById('novoRegistroEquipamento').value = '';
-        renderNovoRegistroTable([]);
-    }
-    function loadNovoRegistroData() {
-        if (novoRegistroData.length === 0) {
-            fetch(REGISTRO_CSV).then(r => r.text()).then(csv => {
-                novoRegistroData = parseCSV(csv);
-            }).catch(console.error);
-        }
+    
+    function closeSupportModal() {
+        document.getElementById('supportModal').classList.remove('show');
     }
     // FUNÇÃO PARA CARREGAR USUÁRIOS
     function loadUsuarios() {
@@ -1881,19 +1475,13 @@
             document.getElementById('usuarios-table').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Erro ao carregar usuários.</td></tr>';
         });
     }
-    // FUNÇÕES PARA MODAIS - CORRIGIDAS
+    // FUNÇÕES PARA MODAIS
     function openProfileModal() {
         document.getElementById('profileModal').classList.add('show');
         loadUserProfile(currentUser.usuario);
     }
     function closeProfileModal() {
         document.getElementById('profileModal').classList.remove('show');
-    }
-    function openSupportModal() {
-        document.getElementById('supportModal').classList.add('show');
-    }
-    function closeSupportModal() {
-        document.getElementById('supportModal').classList.remove('show');
     }
     // FUNÇÃO DE LOGOUT
     function logout() {
