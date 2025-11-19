@@ -1,4 +1,4 @@
-🚆 VLT Carioca - Sistema MRO (Maintenance, Repair & Operations)
+🚆Sistema MRO (Maintenance, Repair & Operations)
 
 📋 VISÃO GERAL MRO
 
@@ -26,7 +26,7 @@ Sistema especializado em Gestão de Manutenção, Reparos e Operações para fro
 
 ⚙️ OPERATIONS (Operações)
 
-· ✅ Status em tempo real da frota operacional
+· ✅ Status em tempo real de acordo com a atualização da frota operacional
 · ✅ Passagem de serviço digital entre turnos
 · ✅ Indicadores de disponibilidade (uptime)
 · ✅ Gestão de equipes e especialidades
